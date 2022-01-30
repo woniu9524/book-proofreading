@@ -1,0 +1,14 @@
+appId: com.lilifan.app
+productName: ElectronApp
+copyright: Copyright © 2021 lilifan
+mac:
+  category: public.xxx.xxx
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+files:
+  - dist/**/*
+  - electron/**/*
+directories:
+  buildResources: assets
+  output: dist_electron
