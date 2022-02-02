@@ -60,5 +60,7 @@
     .el-menu-vertical:not(.el-menu--collapse) {
         min-height: 620px;
     }
-
+    .el-menu-item{
+        min-width: 120px;
+    }
 </style>

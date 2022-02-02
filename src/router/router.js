@@ -1,6 +1,7 @@
 import {createRouter, createWebHashHistory} from "vue-router"
 import Layout from '../views/layout/Layout.vue'
-import CompareIndex from "../views/compare/CompareIndex.vue";
+import CompareIndex from "../views/compare/CompareIndex.vue"
+import CompareFirst from "../views/compare/CompareFirst.vue"
 // 2. 定义路由配置
 const routes = [
     {
@@ -10,6 +11,7 @@ const routes = [
     {
         path: "/layout", component: Layout, children: [
             {path:"/compare/index",component:CompareIndex},
+            {path:"/compare/first",component:CompareFirst},
         ]
     },
 

@@ -20,7 +20,7 @@
     </div>
     <!--下一步-->
     <div style="text-align: center;margin-top: 10px;">
-        <el-button type="primary" round size="large" :disabled="!nextCanBeClick" @click="">&emsp;&emsp;&emsp;下 一 步&emsp;&emsp;&emsp;</el-button>
+        <el-button type="primary" round size="large" :disabled="!nextCanBeClick" @click="goNext">&emsp;&emsp;&emsp;下 一 步&emsp;&emsp;&emsp;</el-button>
     </div>
     <!--用来分割文本的符号-->
     <div style="width: 250px;margin: 15px auto">
@@ -30,20 +30,23 @@
 
 <script>
     import { UploadFilled } from '@element-plus/icons-vue'
-    import {ref,watch, getCurrentInstance} from 'vue'
+    import {ref,watch} from 'vue'
     import { ElNotification } from 'element-plus'
+    import {useProfileStore} from '../../store/index'
+    import {storeToRefs} from 'pinia'
+
     export default {
         components:{
             UploadFilled,
         },
         setup(){
+            const profileStore = useProfileStore() // 获取到store的实例
             const splitInput=ref('。；？')//用来分割的的符号
             const nextCanBeClick=ref(false)//下一步按钮是否可以点击
             const count=ref(0)//记录添加文本的数量
             const nextFlag=ref(0)//是否允许下一步flag
 
             //上传文本时添加文本到article
-            const { appContext : { config: { globalProperties } } } = getCurrentInstance()//全局变量获取
             const handleChange=(fileInfo)=>{
                 const filename=fileInfo.raw.name;//文件名
                 const filepath=fileInfo.raw.path;//文件路径
@@ -52,12 +55,12 @@
                 reader.onload = function(evt) { //读取完文件之后会回来这里
                     const fileString = evt.target.result; // 读取文件内容
                     if(count.value===0){
-                        globalProperties.$articles=[]
+                        profileStore.articles=[]
                         let article1={};
                         article1['filename']=filename;
                         article1['filepath']=filepath;
                         article1['text']=fileString;
-                        globalProperties.$articles.push(article1)
+                        profileStore.articles.push(article1)
                         count.value++;
                         ElNotification({
                             title: 'Success',
@@ -69,7 +72,7 @@
                         article2['filename']=filename;
                         article2['filepath']=filepath;
                         article2['text']=fileString;
-                        globalProperties.$articles.push(article2)
+                        profileStore.articles.push(article2)
                         ElNotification({
                             title: 'Success',
                             message: '校对文本：'+filename+'，已添加~',
@@ -85,7 +88,6 @@
             watch(nextFlag, (newValue) => {
                 if (newValue===1){
                     nextCanBeClick.value=true
-                    console.log(globalProperties.$articles)
                 }
             })
 
@@ -95,6 +97,14 @@
                 count,
                 nextFlag,
                 handleChange,
+            }
+        },
+        methods:{
+            //下一步
+            goNext(){
+                const profileStore = useProfileStore() // 获取到store的实例
+                profileStore.splitSign=this.splitInput;
+                this.$router.push({path:'/compare/first',query: {'splitSign':this.splitInput}})
             }
         }
     }
