@@ -21,7 +21,7 @@ export const setWindow=(win)=>{
 }
 
 //递归判断
-export const compareRecursion=(start,end,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,flag,sign)=>{
+export const compareRecursion=(start,end,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,flag,sign,ignoreSign=true,ignoreYi=false,ignoreFan=false)=>{
     //递归出口
     if(sign==='+'){
         if (start>=end){
@@ -48,7 +48,7 @@ export const compareRecursion=(start,end,s1,arr2,thresholdOne,thresholdTwo,thres
         //每比较两个判断一次
         if(sign==='+'){
             if(start+i<end){
-                let similar=computeCosSimilar(s1[2],arr2[start+i][2])//TODO 符号选项没开启
+                let similar=computeCosSimilar(s1[2],arr2[start+i][2],ignoreSign,ignoreYi,ignoreFan)
                 if(similar>similar0){
                     similar0=similar
                     flag=start+i
@@ -58,7 +58,7 @@ export const compareRecursion=(start,end,s1,arr2,thresholdOne,thresholdTwo,thres
         }else {
             if(start-i>end){
 
-                let similar=computeCosSimilar(s1[2],arr2[start-i][2])//TODO 符号选项没开启
+                let similar=computeCosSimilar(s1[2],arr2[start-i][2],ignoreSign,ignoreYi,ignoreFan)
                 if(similar>similar0){
                     similar0=similar
                     flag=start-i
@@ -87,7 +87,7 @@ export const compareRecursion=(start,end,s1,arr2,thresholdOne,thresholdTwo,thres
 }
 
 //比较一段窗口取出相似度最高的
-export const compareByWindowSize=(addStart,subStart,addEnd,subEnd,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0)=>{
+export const compareByWindowSize=(addStart,subStart,addEnd,subEnd,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,ignoreSign=true,ignoreYi=false,ignoreFan=false)=>{
     //text1和arr2的【addStart-》addEnd】和【subStart-》subEnd】进行比较
     //当相似度高于thresholdTwo且比较的字符串长度大于5时认为是正确的
     //当相似度高于thresholdOne且比较的字符串长度大于5加入正确的列表中，否则只认为是正确的
@@ -96,9 +96,8 @@ export const compareByWindowSize=(addStart,subStart,addEnd,subEnd,s1,arr2,thresh
     return resArr1[2]>resArr2[2]?resArr1:resArr2
 }
 
-export const rankSentence=(sentenceList1,sentenceList2,maxWin=100,thresholdOne=0.9,thresholdTwo=0.7,thresholdThree=0.3)=>{
+export const rankSentence=(sentenceList1,sentenceList2,maxWin=100,thresholdOne=0.9,thresholdTwo=0.7,thresholdThree=0.3,ignoreSign=true,ignoreYi=false,ignoreFan=false)=>{
     //sentenceList结构[  [paragraphLocation,sentenceLocation,sentence],……  ]
-    //TODO 异体繁体转换和简体繁体转换是否开启
 
     //将窗口设置成奇数
     maxWin=setWindow(maxWin)
@@ -113,7 +112,7 @@ export const rankSentence=(sentenceList1,sentenceList2,maxWin=100,thresholdOne=0
             //如果已经超出了sentenceList2的结尾了，设置相似度和位置位-1,不再比较
             resultList.push([s1,[-1,-1,s1[2]],-1])
         }else{
-            let similar0=computeCosSimilar(s1[2],sentenceList2[startLocation][2])//TODO 忽略符号选项还没有开启
+            let similar0=computeCosSimilar(s1[2],sentenceList2[startLocation][2],ignoreSign,ignoreYi,ignoreFan)
             // debugger
             if(similar0>=thresholdOne){
                 //大于thresholdOne认为是可靠的,添加进结果list中，并且更新起始位置
@@ -127,7 +126,7 @@ export const rankSentence=(sentenceList1,sentenceList2,maxWin=100,thresholdOne=0
                     subEnd=(startLocation-halfWin)<rightLocationList.slice(-1)[0][1]?rightLocationList.slice(-1)[0][1]:(startLocation-halfWin)//下限
                 }
                 let addEnd=(startLocation+halfWin)<sentenceList2.length-1?(startLocation+halfWin):sentenceList2.length-1//上限
-                let resArr=compareByWindowSize(startLocation,startLocation,addEnd,subEnd,s1,sentenceList2,thresholdOne,thresholdTwo,thresholdThree,similar0)
+                let resArr=compareByWindowSize(startLocation,startLocation,addEnd,subEnd,s1,sentenceList2,thresholdOne,thresholdTwo,thresholdThree,similar0,ignoreSign,ignoreYi,ignoreFan)
                 resultList.push([resArr[0],resArr[1],resArr[2]])
                 if(resArr[3]>0){
                     rightLocationList.push([i,resArr[3]])//添加到正确的列表

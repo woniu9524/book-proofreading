@@ -32,8 +32,8 @@
     import { UploadFilled } from '@element-plus/icons-vue'
     import {ref,watch} from 'vue'
     import { ElNotification } from 'element-plus'
-    import {useProfileStore} from '../../store/index'
-    import {storeToRefs} from 'pinia'
+    import {useProfileStore} from '../../store'
+
 
     export default {
         components:{
@@ -41,7 +41,7 @@
         },
         setup(){
             const profileStore = useProfileStore() // 获取到store的实例
-            const splitInput=ref('。；？')//用来分割的的符号
+            const splitInput=ref(profileStore.splitSign)//用来分割的的符号
             const nextCanBeClick=ref(false)//下一步按钮是否可以点击
             const count=ref(0)//记录添加文本的数量
             const nextFlag=ref(0)//是否允许下一步flag

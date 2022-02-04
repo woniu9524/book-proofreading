@@ -1,14 +1,14 @@
 /*
 * 计算相似度，这里使用余弦相似度
 * */
-
+import {charFanToJian,charYiToFan} from './translate'
 //除去标点和空格
 export const removeSign=(charList)=>{
     return  charList.filter((char) => {
         char= char.trim(); //除去首尾空格
         if (char !== '') {
             //不是全为空格
-            let sign = "，。、？‘’“”；：【】！#￥%……&·~《》";
+            let sign = "，。、？‘’“”；：【】！#￥%……&·~《》§●";
             if (sign.indexOf(char) === -1) {
                 //不是符号
                 return true
@@ -58,7 +58,7 @@ export const computeWordVectorSimilar=(b1,b2)=>{
 }
 
 //计算两段文本的余弦相似度
-export const computeCosSimilar=(text1, text2,needSign=false)=> {
+export const computeCosSimilar=(text1, text2,ignoreSign=true,ignoreYi=false,ignoreFan=false)=> {
     //分字
     let charList1 = [];
     let charList2 = [];
@@ -69,16 +69,32 @@ export const computeCosSimilar=(text1, text2,needSign=false)=> {
         charList2.push(char);
     }
     //除去标点和空格
-    if(!needSign){
+    if(ignoreSign){
         charList1=removeSign(charList1)
         charList2=removeSign(charList2)
     }
+    //忽略异体字
+    if(ignoreYi){
+        charList1.forEach((char,index)=>{
+            charList1[index]=charYiToFan(char)
+        })
+        charList2.forEach((char,index)=>{
+            charList2[index]=charYiToFan(char)
+        })
+    }
+    //忽略繁体字
+    if(ignoreFan){
+        charList1.forEach((char,index)=>{
+            charList1[index]=charFanToJian(char)
+        })
+        charList2.forEach((char,index)=>{
+            charList2[index]=charFanToJian(char)
+        })
+    }
     //转换成字向量
     let allCharList = Array.from(new Set(charList1.concat(charList2))); //两段文本合并后去重
-    let b1 = [];
-    let b2 = [];
-    b1=computeWordVector(allCharList,charList1)
-    b2=computeWordVector(allCharList,charList2)
+    let b1=computeWordVector(allCharList,charList1)
+    let b2=computeWordVector(allCharList,charList2)
     //计算相似度
     return computeWordVectorSimilar(b1,b2)
 }

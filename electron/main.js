@@ -12,6 +12,8 @@ function createWindow () {
     width: 1120,
     height: 680,
     webPreferences: {
+      nodeIntegration:true,
+      contextIsolation: false,//加上这个vue才能用require
       preload: path.join(__dirname, 'preload.js')
     }
   })

@@ -12,11 +12,11 @@
                         <span>小工具</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item index="1-1">繁体简体转换</el-menu-item>
-                        <el-menu-item index="1-2">繁体异体转换</el-menu-item>
+                        <el-menu-item index="1-1" @click="toJian">繁体简体转换</el-menu-item>
+                        <el-menu-item index="1-2" @click="toYi">繁体异体转换</el-menu-item>
                     </el-menu-item-group>
                 </el-sub-menu>
-                <el-menu-item index="2">
+                <el-menu-item index="2" @click="toCompare">
                     <el-icon><search /></el-icon>
                     <template #title>校对工具</template>
                 </el-menu-item>
@@ -24,7 +24,7 @@
                     <el-icon><notebook /></el-icon>
                     <template #title>文本阅读</template>
                 </el-menu-item>
-                <el-menu-item index="4">
+                <el-menu-item index="4" @click="toSetting">
                     <el-icon><setting /></el-icon>
                     <template #title>全局配置</template>
                 </el-menu-item>
@@ -39,7 +39,7 @@
 
 </template>
 
-<script lang="ts" setup>
+<script  setup>
     import {
         Notebook,
         Star,
@@ -48,6 +48,25 @@
         Setting,
     } from '@element-plus/icons-vue'
 
+</script>
+
+<script>
+    export default {
+        methods:{
+            toJian(){
+                this.$router.push('/tools/jian')
+            },
+            toYi(){
+                this.$router.push('/tools/yi')
+            },
+            toCompare(){
+                this.$router.push('/compare/index')
+            },
+            toSetting(){
+                this.$router.push('/setting')
+            }
+        }
+    }
 </script>
 
 
