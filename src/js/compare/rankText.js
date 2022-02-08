@@ -98,7 +98,7 @@ export const compareByWindowSize=(addStart,subStart,addEnd,subEnd,s1,arr2,thresh
 
 export const rankSentence=(sentenceList1,sentenceList2,maxWin=100,thresholdOne=0.9,thresholdTwo=0.7,thresholdThree=0.3,ignoreSign=true,ignoreYi=false,ignoreFan=false)=>{
     //sentenceList结构[  [paragraphLocation,sentenceLocation,sentence],……  ]
-
+    // debugger
     //将窗口设置成奇数
     maxWin=setWindow(maxWin)
     let halfWin=Math.floor((maxWin+1)/2)

@@ -8,7 +8,7 @@ export const removeSign=(charList)=>{
         char= char.trim(); //除去首尾空格
         if (char !== '') {
             //不是全为空格
-            let sign = "，。、？‘’“”；：【】！#￥%……&·~《》§●";
+            let sign = "!#$%&()*+,-./:;<=>?@[]^_`{|}~“”？，！•【】『』〖〗〔〕〈〉〔〕「」（）、。：；’‘……￥·●○§《》 　\t︰";
             if (sign.indexOf(char) === -1) {
                 //不是符号
                 return true
@@ -96,5 +96,6 @@ export const computeCosSimilar=(text1, text2,ignoreSign=true,ignoreYi=false,igno
     let b1=computeWordVector(allCharList,charList1)
     let b2=computeWordVector(allCharList,charList2)
     //计算相似度
-    return computeWordVectorSimilar(b1,b2)
+    let res=computeWordVectorSimilar(b1,b2)
+    return isNaN(res)?-1:res//防止出现一个为空的情况(没想到真的能遇上，离谱)
 }

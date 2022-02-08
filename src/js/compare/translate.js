@@ -23,3 +23,13 @@ export const charYiToFan=(char)=>{
         return char
     }
 }
+
+//单个自定义转换B-》A
+export const charCustom=(char)=>{
+    let res=db.get('custom').find({'B':char}).value()
+    if (typeof (res)!="undefined"){
+        return res.A
+    }else{
+        return char
+    }
+}

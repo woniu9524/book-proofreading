@@ -56,7 +56,7 @@
                     >
                         <template #default="scope">
                             <el-tag
-                                    :type="scope.row.similar < filterThreshold ? 'danger' : ''"
+                                    :type="scope.row.similar < rankSetting.filterThreshold ? 'danger' : ''"
                                     disable-transitions
                             >{{ scope.row.similar }}</el-tag
                             >
@@ -137,6 +137,7 @@
 </template>
 
 <script>
+    import {highlightHandler} from '../../js/compare/highlightText'
     import {computeCosSimilar} from '../../js/compare/computeSimilar'
     import {getTextList} from '../../js/compare/splitArticles.js'
     import {rankSentence} from '../../js/compare/rankText.js'
@@ -154,6 +155,13 @@
                     ignoreFanTi:false,
                     ignoreYiTi:false,
                     ignoreSign:true,
+                    ignoreCustom:false,
+                },
+                highlightSetting:{
+                    ignoreCustom:false,
+                    ignoreFanTi:false,
+                    ignoreYiTi:false,
+                    ignoreSign:true,
                 },
                 splitSign:'',
                 introduceDrawer:false,
@@ -163,8 +171,9 @@
                 pageSize:50,
                 setting:false,
 
-                ignoreCustom_rank:false,
-                resList:[],
+                resList:[],//纯文字的table
+                highlightList:[],//高连文本的table
+
             }
         },
         methods:{
@@ -172,19 +181,29 @@
                 const profileStore = useProfileStore() // 获取到store的实例
                 const {articles,splitSign}=storeToRefs(profileStore)
                 let textLists= getTextList(articles.value[0].text,articles.value[1].text,splitSign.value)//得到分割后的文本
-                this.resList=rankSentence(textLists[0],textLists[1],100,0.9,0.7,0.3,this.ignoreSign,this.ignoreYiTi,this.ignoreFanTi)
+                this.resList=rankSentence(textLists[0],textLists[1],100,0.9,0.7,0.3,this.rankSetting.ignoreSign,this.rankSetting.ignoreYiTi,this.rankSetting.ignoreFanTi)
                 this.tableData=[]
                 this.resList.forEach((arr)=>{
-                    this.tableData.push({
+                    /*this.tableData.push({
                         'firstNo':arr[0][0]+'-'+arr[0][1],
                         'firstText':arr[0][2],
                         'secondNo':arr[1][0]+'-'+arr[0][1],
                         'secondText':arr[1][2],
                         'similar':arr[2],
                         'isClicked':false,
+                    })*/
+                   let res= highlightHandler(arr[0][2],arr[1][2],true,true,true,true)
+                    this.tableData.push({
+                        'firstNo':arr[0][0]+'-'+arr[0][1],
+                        'firstText':res.h1,
+                        'secondNo':arr[1][0]+'-'+arr[0][1],
+                        'secondText':res.h2,
+                        'similar':arr[2],
+                        'isClicked':false,
                     })
                 })
                 this.setting=false
+                //TODO 被比较的文本的顺序也是顺序的，应该不对，明天看看
             },
             //正序排序
             orderRank(){
@@ -218,14 +237,6 @@
                     this.resList[location][0][2]=row.firstText
                     this.resList[location][1][2]=row.secondText
                     this.resList[location][2]=cos
-                    /*for(let i=0;i<this.resList.length;i++){
-                        if(this.resList[i][0][0]+'-'+this.resList[i][0][1]===row.firstNo){
-                            this.resList[i][0][2]=row.firstText
-                            this.resList[i][1][2]=row.secondText
-                            this.resList[i][2]=cos
-                            break;
-                        }
-                    }*/
                 }
 
 
@@ -233,11 +244,14 @@
 
         },
         mounted() {
+            //全局配置
             const profileStore = useProfileStore() // 获取到store的实例
             const {rank,highlight}=storeToRefs(profileStore)
             this.rankSetting=rank.value//设置为全局配置中的
-            console.log(rank.value)
+            this.highlightSetting=highlight.value
+            //重置表格
             this.resetTable()
+
 
         }
     }
@@ -256,5 +270,35 @@
     }
     .split-page{
         text-align: center;
+    }
+
+    >>> .text-diff{
+        background-color: #fbff00;
+        display: inline-block;
+        color: #f00;
+        padding-left: 3px;
+        padding-right: 3px;
+        border-radius: 5px;
+        border: 1px solid #ef6063;
+    }
+    >>> .text-added{
+        background-color: #60C25E;
+        display: inline-block;
+        color: #2F4858;
+        padding-left: 3px;
+        padding-right: 3px;
+        border-radius: 5px;
+        border: 1px solid #00AD77;
+    }
+    >>> .text-removed{
+        background-color: #845EC2;
+        display: inline-block;
+        color: #F9F871;
+        padding-left: 3px;
+        padding-right: 3px;
+        border-radius: 5px;
+        border: 1px solid #D65DB1;
+
+
     }
 </style>
