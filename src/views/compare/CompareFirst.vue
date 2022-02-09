@@ -8,14 +8,15 @@
             >
                 <el-menu-item index="1" @click="go_index">上一步</el-menu-item>
                 <el-menu-item index="2" @click="open_introduction">说明</el-menu-item>
-                <el-menu-item index="3" @click="setting=true">参数设置</el-menu-item>
+                <el-menu-item index="3" @click="settingRank=true">排序设置</el-menu-item>
                 <el-sub-menu index="4">
                     <template #title>排序</template>
                     <el-menu-item index="4-1" @click="orderRank">按相似度正序</el-menu-item>
                     <el-menu-item index="4-2" @click="reverseRank">按相似度逆序</el-menu-item>
                     <el-menu-item index="4-3" @click="normalRank">恢复正常顺序</el-menu-item>
                 </el-sub-menu>
-                <el-menu-item index="5" @click="go_next">下一步</el-menu-item>
+                <el-menu-item index="5" @click="settingHighlight=true">高亮设置</el-menu-item>
+                <el-menu-item index="6" @click="go_next">下一步</el-menu-item>
             </el-menu>
         </el-header>
         <el-main style="padding: 20px 10px">
@@ -83,8 +84,8 @@
         </div>
         <!--TODO 说明没写完-->
     </el-drawer>
-    <!--参数设置对话框-->
-    <el-dialog v-model="setting" title="参数设置" class="setting-dialog" width="400px">
+    <!--排序设置对话框-->
+    <el-dialog v-model="settingRank" title="排序设置" class="setting-dialog" width="400px">
         <el-form ref="rankSetting">
             <el-row :gutter="20">
                 <el-col :span="12">
@@ -128,7 +129,39 @@
         </el-form>
         <template #footer>
               <span class="dialog-footer">
-                <el-button @click="setting = false">取消</el-button>
+                <el-button @click="settingRank = false">取消</el-button>
+                <el-button type="primary" @click="resetTable">确认重置</el-button
+                >
+      </span>
+        </template>
+    </el-dialog>
+    <!--高亮设置对话框-->
+    <el-dialog v-model="settingHighlight" title="高亮设置" class="setting-dialog" width="400px">
+        <el-form ref="rankSetting">
+            <el-row :gutter="20">
+                <el-col :span="12">
+                    <el-form-item label="忽略标点符号">
+                        <el-switch v-model="highlightSetting.ignoreSign"></el-switch>
+                    </el-form-item>
+                    <el-form-item label="忽略简体繁体">
+                        <el-switch v-model="highlightSetting.ignoreFanTi"></el-switch>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="忽略繁体异体">
+                        <el-switch v-model="highlightSetting.ignoreYiTi"></el-switch>
+                    </el-form-item>
+                    <el-form-item label="忽略自定义表">
+                        <el-switch v-model="highlightSetting.ignoreCustom"></el-switch>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+
+            <p style="color: red">各项参数应如何调整，可在说明中查看！</p>
+        </el-form>
+        <template #footer>
+              <span class="dialog-footer">
+                <el-button @click="settingHighlight = false">取消</el-button>
                 <el-button type="primary" @click="resetTable">确认重置</el-button
                 >
       </span>
@@ -169,8 +202,8 @@
                 tableData:[],
                 currentPage:1,
                 pageSize:50,
-                setting:false,
-
+                settingRank:false,
+                settingHighlight:false,
                 resList:[],//纯文字的table
                 highlightList:[],//高连文本的table
 
@@ -192,18 +225,17 @@
                         'similar':arr[2],
                         'isClicked':false,
                     })*/
-                   let res= highlightHandler(arr[0][2],arr[1][2],true,true,true,true)
+                    let res= highlightHandler(arr[0][2],arr[1][2],this.highlightSetting.ignoreSign,this.highlightSetting.ignoreFanTi,this.highlightSetting.ignoreYiTi)
                     this.tableData.push({
                         'firstNo':arr[0][0]+'-'+arr[0][1],
                         'firstText':res.h1,
-                        'secondNo':arr[1][0]+'-'+arr[0][1],
+                        'secondNo':arr[1][0]+'-'+arr[1][1],
                         'secondText':res.h2,
-                        'similar':arr[2],
+                        'similar':arr[2],//TODO 这里用高亮相似度
                         'isClicked':false,
                     })
                 })
-                this.setting=false
-                //TODO 被比较的文本的顺序也是顺序的，应该不对，明天看看
+                this.settingRank=false
             },
             //正序排序
             orderRank(){
@@ -228,15 +260,26 @@
             },
             //双击事件
             dbclick(row){
+                if(row.isClicked===false){
+                    //当双击要修改时，将两段文本换成原文本
+                    let location=row.firstNo.split('-')[1]-1//位置是firstNo的-后面的数字-1
+                    row.firstText=this.resList[location][0][2]
+                    row.secondText=this.resList[location][1][2]
+                }
                 row.isClicked=!row.isClicked;
                 if(row.isClicked===false){
-                    let cos=computeCosSimilar(row.firstText,row.secondText,this.ignoreSign,this.ignoreFanTi,this.ignoreYiTi);
+                    //当双击恢复时，先更新resList
+                    let cos=computeCosSimilar(row.firstText,row.secondText,this.rankSetting.ignoreSign,this.rankSetting.ignoreFanTi,this.rankSetting.ignoreYiTi);
                     row.similar=cos;
-                    //更新resList余弦值
+                    //更新resList余弦值和新的文本
                     let location=row.firstNo.split('-')[1]-1//位置是firstNo的-后面的数字-1
                     this.resList[location][0][2]=row.firstText
                     this.resList[location][1][2]=row.secondText
                     this.resList[location][2]=cos
+                    //文本高亮
+                    let res= highlightHandler(row.firstText,row.secondText,this.highlightSetting.ignoreSign,this.highlightSetting.ignoreFanTi,this.highlightSetting.ignoreYiTi)
+                    row.firstText=res.h1
+                    row.secondText=res.h2
                 }
 
 

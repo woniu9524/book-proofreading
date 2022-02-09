@@ -120,10 +120,11 @@
                 let res={}
                 res['splitSign']=db.get('rank').find('splitSign').value()//分割的标点
                 res['rank']=db.get('rank').value()
-                res['highlight']=db.get('highlight').find('sign').value()
+                res['highlight']=db.get('highlight').value()
 
                 this.rank=res['rank']
                 this.splitSign=res['splitSign']
+                this.highlight=res['highlight']
             },
 
         },
