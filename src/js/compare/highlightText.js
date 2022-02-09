@@ -202,12 +202,16 @@ export const recoverText=(charObjList1,charObjList2,originTextArr1,originTextArr
         arr[i].value=originTextArr2[i]
     })
     //插入符号value 和sign属性
-    signArr1.forEach((obj)=>{
-        charObjList1.splice(obj.location,0,{'value':obj.value,'sign':true})
-    })
-    signArr2.forEach((obj)=>{
-        charObjList2.splice(obj.location,0,{'value':obj.value,'sign':true})
-    })
+    if(signArr1.length>0){
+        signArr1.forEach((obj)=>{
+            charObjList1.splice(obj.location,0,{'value':obj.value,'sign':true})
+        })
+    }
+    if(signArr2.length>0){
+        signArr2.forEach((obj)=>{
+            charObjList2.splice(obj.location,0,{'value':obj.value,'sign':true})
+        })
+    }
     return {'originChars1':charObjList1,'originChars2':charObjList2}
 }
 //处理文本高亮

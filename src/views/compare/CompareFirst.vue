@@ -4,7 +4,6 @@
             <el-menu
                     class="first-menu"
                     mode="horizontal"
-                    @select="handleSelect"
             >
                 <el-menu-item index="1" @click="go_index">上一步</el-menu-item>
                 <el-menu-item index="2" @click="open_introduction">说明</el-menu-item>
@@ -162,7 +161,7 @@
         <template #footer>
               <span class="dialog-footer">
                 <el-button @click="settingHighlight = false">取消</el-button>
-                <el-button type="primary" @click="resetTable">确认重置</el-button
+                <el-button type="primary" @click="resetHighlight">确认重置</el-button
                 >
       </span>
         </template>
@@ -215,6 +214,7 @@
                 const {articles,splitSign}=storeToRefs(profileStore)
                 let textLists= getTextList(articles.value[0].text,articles.value[1].text,splitSign.value)//得到分割后的文本
                 this.resList=rankSentence(textLists[0],textLists[1],100,0.9,0.7,0.3,this.rankSetting.ignoreSign,this.rankSetting.ignoreYiTi,this.rankSetting.ignoreFanTi)
+                this.resList=JSON.parse(JSON.stringify(this.resList))//这里做一下深拷贝，不然在双击更新的时候会同步更新通序号的那个数组里面的内容
                 this.tableData=[]
                 this.resList.forEach((arr)=>{
                     /*this.tableData.push({
@@ -231,11 +231,35 @@
                         'firstText':res.h1,
                         'secondNo':arr[1][0]+'-'+arr[1][1],
                         'secondText':res.h2,
-                        'similar':arr[2],//TODO 这里用高亮相似度
+                        'similar':arr[2],
                         'isClicked':false,
                     })
                 })
                 this.settingRank=false
+            },
+            resetHighlight(){
+                this.tableData=[]
+                this.resList.forEach((arr)=>{
+                    /*this.tableData.push({
+                        'firstNo':arr[0][0]+'-'+arr[0][1],
+                        'firstText':arr[0][2],
+                        'secondNo':arr[1][0]+'-'+arr[0][1],
+                        'secondText':arr[1][2],
+                        'similar':arr[2],
+                        'isClicked':false,
+                    })*/
+                    let res= highlightHandler(arr[0][2],arr[1][2],this.highlightSetting.ignoreSign,this.highlightSetting.ignoreFanTi,this.highlightSetting.ignoreYiTi)
+                    // debugger
+                    this.tableData.push({
+                        'firstNo':arr[0][0]+'-'+arr[0][1],
+                        'firstText':res.h1,
+                        'secondNo':arr[1][0]+'-'+arr[1][1],
+                        'secondText':res.h2,
+                        'similar':arr[2],
+                        'isClicked':false,
+                    })
+                })
+                this.settingHighlight=false
             },
             //正序排序
             orderRank(){
@@ -255,12 +279,15 @@
                 this.tableData.sort(((a, b) => {
                     let aa=a.firstNo.split('-');
                     let bb=b.firstNo.split('-');
-                    return aa[0]-bb[0];
+                    // console.log(aa,bb)
+                    return aa[1]-bb[1];
                 }))
             },
             //双击事件
             dbclick(row){
+                // debugger
                 if(row.isClicked===false){
+                    // debugger
                     //当双击要修改时，将两段文本换成原文本
                     let location=row.firstNo.split('-')[1]-1//位置是firstNo的-后面的数字-1
                     row.firstText=this.resList[location][0][2]
@@ -268,6 +295,7 @@
                 }
                 row.isClicked=!row.isClicked;
                 if(row.isClicked===false){
+                    // debugger
                     //当双击恢复时，先更新resList
                     let cos=computeCosSimilar(row.firstText,row.secondText,this.rankSetting.ignoreSign,this.rankSetting.ignoreFanTi,this.rankSetting.ignoreYiTi);
                     row.similar=cos;
