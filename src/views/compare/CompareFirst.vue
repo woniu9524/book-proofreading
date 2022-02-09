@@ -5,8 +5,8 @@
                     class="first-menu"
                     mode="horizontal"
             >
-                <el-menu-item index="1" @click="go_index">上一步</el-menu-item>
-                <el-menu-item index="2" @click="open_introduction">说明</el-menu-item>
+                <el-menu-item index="1" @click="goIndex">上一步</el-menu-item>
+                <el-menu-item index="2" @click="openIntroduction">说明</el-menu-item>
                 <el-menu-item index="3" @click="settingRank=true">排序设置</el-menu-item>
                 <el-sub-menu index="4">
                     <template #title>排序</template>
@@ -15,7 +15,7 @@
                     <el-menu-item index="4-3" @click="normalRank">恢复正常顺序</el-menu-item>
                 </el-sub-menu>
                 <el-menu-item index="5" @click="settingHighlight=true">高亮设置</el-menu-item>
-                <el-menu-item index="6" @click="go_next">下一步</el-menu-item>
+                <el-menu-item index="6" @click="goNext">下一步</el-menu-item>
             </el-menu>
         </el-header>
         <el-main style="padding: 20px 10px">
@@ -225,7 +225,8 @@
                         'similar':arr[2],
                         'isClicked':false,
                     })*/
-                    let res= highlightHandler(arr[0][2],arr[1][2],this.highlightSetting.ignoreSign,this.highlightSetting.ignoreFanTi,this.highlightSetting.ignoreYiTi)
+                    let ignore={'ignoreSign':this.highlightSetting.ignoreSign,'ignoreFanTi':this.highlightSetting.ignoreFanTi,'ignoreYiTi':this.highlightSetting.ignoreYiTi,'ignoreCustom':false}
+                    let res= highlightHandler(arr[0][2],arr[1][2],ignore)
                     this.tableData.push({
                         'firstNo':arr[0][0]+'-'+arr[0][1],
                         'firstText':res.h1,
@@ -248,7 +249,8 @@
                         'similar':arr[2],
                         'isClicked':false,
                     })*/
-                    let res= highlightHandler(arr[0][2],arr[1][2],this.highlightSetting.ignoreSign,this.highlightSetting.ignoreFanTi,this.highlightSetting.ignoreYiTi)
+                    let ignore={'ignoreSign':this.highlightSetting.ignoreSign,'ignoreFanTi':this.highlightSetting.ignoreFanTi,'ignoreYiTi':this.highlightSetting.ignoreYiTi,'ignoreCustom':false}
+                    let res= highlightHandler(arr[0][2],arr[1][2],ignore)
                     // debugger
                     this.tableData.push({
                         'firstNo':arr[0][0]+'-'+arr[0][1],
@@ -309,8 +311,15 @@
                     row.firstText=res.h1
                     row.secondText=res.h2
                 }
-
-
+            },
+            goIndex(){
+                this.$router.push('/compare/index')
+            },
+            goNext(){
+                this.$router.push('/compare/second')
+            },
+            openIntroduction(){
+                this.introduceDrawer=true
             },
 
         },

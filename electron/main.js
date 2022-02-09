@@ -44,4 +44,3 @@ app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
 
-//TODO 拆分模块内容...

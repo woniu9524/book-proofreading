@@ -11,9 +11,9 @@
     "ignoreSign": true
   },
   "highlight": {
-    "ignoreFanTi": false,
+    "ignoreFanTi": true,
     "ignoreYiTi": true,
-    "ignoreCustom": true,
+    "ignoreCustom": false,
     "ignoreSign": true
   }
 }
