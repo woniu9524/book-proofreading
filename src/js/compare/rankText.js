@@ -108,7 +108,7 @@ export const rankSentence=(sentenceList1,sentenceList2,maxWin=100,thresholdOne=0
     let resultList=[]//接收排序的结果
     sentenceList1.forEach((s1,i,arr1)=>{
         // debugger
-        if(startLocation>sentenceList2.length){
+        if(startLocation>sentenceList2.length-1){
             //如果已经超出了sentenceList2的结尾了，设置相似度和位置位-1,不再比较
             resultList.push([s1,[-1,-1,s1[2]],-1])
         }else{

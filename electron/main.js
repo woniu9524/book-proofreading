@@ -3,7 +3,7 @@
 // 控制应用生命周期和创建原生浏览器窗口的模组
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
-
+const ipc = require('electron').ipcMain
 const NODE_ENV = process.env.NODE_ENV
 
 function createWindow () {
@@ -44,3 +44,25 @@ app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
 
+//打开预览窗口
+ipc.on('openPreview',()=>
+{
+  let winA = new BrowserWindow ({
+    width: 1000,
+    height:800,
+    webPreferences: {
+      nodeIntegration:true,
+      contextIsolation: false,//加上这个vue才能用require
+      preload: path.join(__dirname, 'preload.js')
+    }
+  })
+  let winURL=NODE_ENV === 'development'
+      ? 'http://localhost:3000'
+      :`file://${path.join(__dirname, '../dist/index.html')}`
+  winA.loadURL(winURL+'#/preview');
+
+  winA.on("close", function(){
+    winA = null;
+  })
+
+})

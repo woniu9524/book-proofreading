@@ -50,7 +50,8 @@
 <script>
     import {useProfileStore} from "../../store";
     import {storeToRefs} from "pinia";
-
+    import {mergeHtml, mergeTexts} from "../../js/compare/mergeText";
+    const ipc = require('electron').ipcRenderer
     export default {
         name: "CompareSecond",
         data(){
@@ -66,15 +67,46 @@
                     ignoreYiTi:false,
                     ignoreSign:true,
                 },
+                resList:[],
             }
         },
         methods:{
+            generateHtml(){
+                let htmlList=[]
+                let diffList=[]
+                let temp=[]
+                this.resList.forEach((line,i,arr)=>{
+                    if(i===0||arr[i-1][0][0]!==arr[i][0][0]){
+                        //当段落序号发生变化时
+                        if(i!==0){
+                            htmlList.push(temp)
+                            temp=[]
+                        }
+                    }
+                    // console.log(this.mergeType)
+                    let htmlObj=mergeTexts(line[0][2],line[1][2],this.highlightSetting,this.form.mergeType)
+                    temp.push(htmlObj.html)//添加html文本
+                    //添加diff表
+                    htmlObj.diffList.forEach((obj)=>{
+                            diffList.push(obj)
+                    })
 
+                })
+                htmlList.push(temp)
+                let htmlText= mergeHtml(htmlList)
+                let resText=htmlText+'\n||||||||||||||||||||||||||\n'+JSON.stringify(diffList)//将html和diff表组合
+                return resText
+
+            },
+            previewText(){
+                this.generateHtml()
+                localStorage.setItem('previewData',this.generateHtml())
+                ipc.send('openPreview')
+            },
         },
         mounted() {
             this.highlightSetting=JSON.parse(this.$route.query.ignore)
-
-
+            this.resList=JSON.parse(this.$route.query.table)
         }
     }
 </script>

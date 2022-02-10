@@ -310,7 +310,7 @@
                     //文本高亮
                     let ignore={'ignoreSign':this.highlightSetting.ignoreSign,'ignoreFanTi':this.highlightSetting.ignoreFanTi,'ignoreYiTi':this.highlightSetting.ignoreYiTi,'ignoreCustom':this.highlightSetting.ignoreCustom}
                     let res= highlightHandler(row.firstText,row.secondText,ignore)
-                    mergeTexts(row.firstText,row.secondText,ignore,'diff')
+                    // mergeTexts(row.firstText,row.secondText,ignore,'diff')
                     row.firstText=res.h1
                     row.secondText=res.h2
                 }
@@ -320,7 +320,7 @@
             },
             goNext(){
                 let ignore={'ignoreSign':this.highlightSetting.ignoreSign,'ignoreFanTi':this.highlightSetting.ignoreFanTi,'ignoreYiTi':this.highlightSetting.ignoreYiTi,'ignoreCustom':this.highlightSetting.ignoreCustom}
-                this.$router.push({path:'/compare/second',query: {'ignore':JSON.stringify(ignore)}})
+                this.$router.push({path:'/compare/second',query: {'ignore':JSON.stringify(ignore),'table':JSON.stringify(this.resList)}})
             },
             openIntroduction(){
                 this.introduceDrawer=true

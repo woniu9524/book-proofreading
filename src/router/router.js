@@ -6,6 +6,7 @@ import CompareSecond from "../views/compare/CompareSecond.vue";
 import Yi2Fan from "../views/tools/Yi2Fan.vue";
 import Jian2Fan from "../views/tools/Jian2Fan.vue";
 import Setting from "../views/setting/Setting.vue";
+import PreviewHtml from "../views/compare/preview/PreviewHtml.vue";
 // 2. 定义路由配置
 const routes = [
     {
@@ -30,6 +31,9 @@ const routes = [
             {path:"/setting",component:Setting},
         ]
     },
+    {
+        path: '/preview',component: PreviewHtml
+    }
 
 ];
 

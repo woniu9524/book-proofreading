@@ -106,7 +106,8 @@
                 profileStore.splitSign=this.splitInput;
                 this.$router.push({path:'/compare/first',query: {'splitSign':this.splitInput}})
             }
-        }
+        },
+
     }
 
 </script>

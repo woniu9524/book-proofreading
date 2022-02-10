@@ -45,7 +45,7 @@ const getSignOrder=(lst)=>{
                 }else{
                     //向左找不到的情况
                     let j=1
-                    while (arr[i+j].sign){
+                    while (typeof (arr[i+j])!=="undefined" &&arr[i+j].sign){
                         j++//防止下一个也是标点
                     }
                     if(typeof (arr[i+j])!=="undefined") {
@@ -191,14 +191,45 @@ export const mergeTexts=(text1,text2,ignore,mergeType)=>{
     let addedList=extractAdded(orderChars2)//提取added内容
     //合并
     let mergeText=orderChars1
+
     if(mergeType!=='diff'){
         let mergeText= insertAdded(orderChars1,addedList)
     }
-    let sameAttributeTexts= mergeSame(mergeText)//TODO 这里可以优化，让added周围的符号也变成一个类型
+    let sameAttributeTexts= mergeSame(mergeText)//TODO 这里可以优化，让added removed周围的符号也变成一个类型
     //添加高亮
     let htmlText=addHighlight(sameAttributeTexts)
-    return htmlText
+    return {'html':htmlText,'diffList':diffList}
 
+}
+
+export const mergeHtml=(htmlList)=>{
+    //首先对每一段加上一个p标签
+    let paragraphs=[]
+    htmlList.forEach((paraList)=>{
+        let str='<p class="para-style">'
+        paraList.forEach((line)=>{
+            str+=line
+        })
+        str+='</p>\n'
+        paragraphs.push(str)
+    })
+    const templateHtml1='<!DOCTYPE html>\n' +
+        '<html lang="en">\n' +
+        '<head>\n' +
+        '    <meta charset="UTF-8">\n' +
+        '    <meta http-equiv="X-UA-Compatible" content="IE=edge">\n' +
+        '    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+        '</head>\n' +
+        '<body>\n'
+    const templateHtml2='</body>\n' +
+        '</html>'
+
+    let html=''
+    paragraphs.forEach((p)=>{
+        html+=p
+    })
+    html=templateHtml1+html+templateHtml2
+    return html
 }
 
 
