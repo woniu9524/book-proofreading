@@ -175,6 +175,7 @@
     import {rankSentence} from '../../js/compare/rankText.js'
     import {useProfileStore} from "../../store";
     import {storeToRefs} from 'pinia'
+    import {mergeTexts} from '../../js/compare/mergeText'
     export default {
         name: "CompareFirst",
         data(){
@@ -225,7 +226,7 @@
                         'similar':arr[2],
                         'isClicked':false,
                     })*/
-                    let ignore={'ignoreSign':this.highlightSetting.ignoreSign,'ignoreFanTi':this.highlightSetting.ignoreFanTi,'ignoreYiTi':this.highlightSetting.ignoreYiTi,'ignoreCustom':false}
+                    let ignore={'ignoreSign':this.highlightSetting.ignoreSign,'ignoreFanTi':this.highlightSetting.ignoreFanTi,'ignoreYiTi':this.highlightSetting.ignoreYiTi,'ignoreCustom':this.highlightSetting.ignoreCustom}
                     let res= highlightHandler(arr[0][2],arr[1][2],ignore)
                     this.tableData.push({
                         'firstNo':arr[0][0]+'-'+arr[0][1],
@@ -249,7 +250,7 @@
                         'similar':arr[2],
                         'isClicked':false,
                     })*/
-                    let ignore={'ignoreSign':this.highlightSetting.ignoreSign,'ignoreFanTi':this.highlightSetting.ignoreFanTi,'ignoreYiTi':this.highlightSetting.ignoreYiTi,'ignoreCustom':false}
+                    let ignore={'ignoreSign':this.highlightSetting.ignoreSign,'ignoreFanTi':this.highlightSetting.ignoreFanTi,'ignoreYiTi':this.highlightSetting.ignoreYiTi,'ignoreCustom':this.highlightSetting.ignoreCustom}
                     let res= highlightHandler(arr[0][2],arr[1][2],ignore)
                     // debugger
                     this.tableData.push({
@@ -307,7 +308,9 @@
                     this.resList[location][1][2]=row.secondText
                     this.resList[location][2]=cos
                     //文本高亮
-                    let res= highlightHandler(row.firstText,row.secondText,this.highlightSetting.ignoreSign,this.highlightSetting.ignoreFanTi,this.highlightSetting.ignoreYiTi)
+                    let ignore={'ignoreSign':this.highlightSetting.ignoreSign,'ignoreFanTi':this.highlightSetting.ignoreFanTi,'ignoreYiTi':this.highlightSetting.ignoreYiTi,'ignoreCustom':this.highlightSetting.ignoreCustom}
+                    let res= highlightHandler(row.firstText,row.secondText,ignore)
+                    mergeTexts(row.firstText,row.secondText,ignore,'diff')
                     row.firstText=res.h1
                     row.secondText=res.h2
                 }
@@ -316,7 +319,8 @@
                 this.$router.push('/compare/index')
             },
             goNext(){
-                this.$router.push('/compare/second')
+                let ignore={'ignoreSign':this.highlightSetting.ignoreSign,'ignoreFanTi':this.highlightSetting.ignoreFanTi,'ignoreYiTi':this.highlightSetting.ignoreYiTi,'ignoreCustom':this.highlightSetting.ignoreCustom}
+                this.$router.push({path:'/compare/second',query: {'ignore':JSON.stringify(ignore)}})
             },
             openIntroduction(){
                 this.introduceDrawer=true

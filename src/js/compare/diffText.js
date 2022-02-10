@@ -90,7 +90,7 @@ export const getDiffText=(text1,text2)=>{
         if(i<diffList.length&&i>0&&diffList[i-1].removed===true&&diffList[i].added===true){
             diffList[i-1].diff=true
             diffList[i].diff=true
-            let flag=Math.round(Math.random()*100000000000).toString()
+            let flag=Math.round(Math.random()*100000000000).toString()+new Date().getTime().toString()
             diffList[i-1].name=flag
             diffList[i].name=flag
         }
@@ -141,6 +141,65 @@ export const recoverText=(charObjList1,charObjList2,originTextArr1,originTextArr
         })
     }
     return {'originChars1':charObjList1,'originChars2':charObjList2}
+}
+
+//合并相同属性
+export const mergeSame=(charObjs)=>{
+    let locationList=[]//记录改变的位置
+    let flag=''
+    charObjs.forEach((charObj,i)=>{
+        if(charObj.diff===true){
+            if(flag!=='diff'){
+                locationList.push(i)
+                flag='diff'
+            }
+        }else if(charObj.added===true){
+            if (flag!=='added'){
+                locationList.push(i)
+                flag='added'
+            }
+        }else if(charObj.removed===true){
+            if(flag!=='removed'){
+                locationList.push(i)
+                flag='removed'
+            }
+        }else {
+            if(flag!=='common'){
+                locationList.push(i)
+                flag='common'
+            }
+        }
+    })
+    //合并相同属性文本
+    let commonTextList=[]
+    locationList.forEach((location,i,arr)=>{
+        //添加类型
+        let temp={'value':''}
+        if(charObjs[location].diff===true){
+            temp.type='diff'
+            temp.name=charObjs[location].name
+        }else if(charObjs[location].added===true){
+            temp.type='added'
+        }else if(charObjs[location].removed===true){
+            temp.type='removed'
+        }else {
+            temp.type='common'
+        }
+        temp.order=charObjs[location].order
+        //添加内容
+        if(typeof (arr[i+1])==="undefined"){
+            charObjs.slice(arr[i],).forEach((obj)=>{
+                temp.value+=obj.value
+            })
+        }else {
+            charObjs.slice(arr[i],arr[i+1]).forEach((obj)=>{
+                temp.value+=obj.value
+            })
+        }
+        commonTextList.push(temp)
+    })
+
+    return commonTextList
 }
 
 //处理文本高亮
