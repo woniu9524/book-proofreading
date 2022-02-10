@@ -185,7 +185,8 @@ export const mergeSame=(charObjs)=>{
         }else {
             temp.type='common'
         }
-        temp.order=charObjs[location].order
+        // temp.order=charObjs[location].order
+        // temp.sign=charObjs[location].sign
         //添加内容
         if(typeof (arr[i+1])==="undefined"){
             charObjs.slice(arr[i],).forEach((obj)=>{

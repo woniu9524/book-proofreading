@@ -14,8 +14,6 @@ export const addHighLightByAttribute=(obj)=>{
 }
 
 
-
-
 const addHighlight=(commonTextList)=>{
     //添加高亮
     let highlightText=''
