@@ -6,7 +6,7 @@
                 drag
                 multiple
                 :auto-upload="false"
-                accept=".txt"
+                accept=".txt,.docx"
                 :on-change="handleChange"
                 limit="2"
                 :show-file-list="false"
@@ -34,7 +34,7 @@
     import { ElNotification } from 'element-plus'
     import {useProfileStore} from '../../store'
 
-
+    let mammoth = require("mammoth");
     export default {
         components:{
             UploadFilled,
@@ -50,10 +50,47 @@
             const handleChange=(fileInfo)=>{
                 const filename=fileInfo.raw.name;//文件名
                 const filepath=fileInfo.raw.path;//文件路径
-                let reader = new FileReader();//新建一个FileReader
-                reader.readAsText(fileInfo.raw, "UTF-8");//读取文件
-                reader.onload = function(evt) { //读取完文件之后会回来这里
-                    const fileString = evt.target.result; // 读取文件内容
+                let fileString=''
+                if(filename.indexOf('.docx')>-1){
+                    mammoth.extractRawText({path: filepath})
+                        .then(function(result){
+                            fileString = result.value; // The raw text
+                            if(count.value===0){
+                                profileStore.articles=[]
+                                let article1={};
+                                article1['filename']=filename;
+                                article1['filepath']=filepath;
+                                article1['text']=fileString;
+                                profileStore.articles.push(article1)
+                                count.value++;
+                                ElNotification({
+                                    title: 'Success',
+                                    message: '底稿：'+ filename+'，已添加~',
+                                    type: 'success',
+                                })
+                            }else if(count.value===1){
+                                let article2={};
+                                article2['filename']=filename;
+                                article2['filepath']=filepath;
+                                article2['text']=fileString;
+                                profileStore.articles.push(article2)
+                                ElNotification({
+                                    title: 'Success',
+                                    message: '校对文本：'+filename+'，已添加~',
+                                    type: 'success',
+                                })
+                                count.value++;
+                                nextFlag.value=1;//可以进行下一步了
+                            }
+
+                        }).done();
+
+                }else {
+                    let reader = new FileReader();//新建一个FileReader
+                    reader.readAsText(fileInfo.raw, "UTF-8");//读取文件
+                    reader.onload = function(evt) { //读取完文件之后会回来这
+                        fileString = evt.target.result; // 读取文件内容
+                    }
                     if(count.value===0){
                         profileStore.articles=[]
                         let article1={};
@@ -82,6 +119,7 @@
                         nextFlag.value=1;//可以进行下一步了
                     }
                 }
+
             }
 
             //判断是否已经上传了两个文本
