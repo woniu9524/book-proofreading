@@ -34,17 +34,27 @@
             </el-form-item>
             <el-form-item label="方式选择">
                 <el-radio-group v-model="form.mergeType">
-                    <el-radio label="diff">只合并不同之处</el-radio>
+                    <el-radio label="diff">只合并不同(推荐)</el-radio>
                     <el-radio label="all">合并不同+多余</el-radio>
                 </el-radio-group>
             </el-form-item>
-
+            <el-form-item label="提示格式">
+                    <el-input v-model="form.tips" placeholder="填写一个提示的格式"></el-input>
+            </el-form-item>
             <div style="margin: auto;padding-left: 60px">
+                <el-button type="warning" @click="introduceDrawer=true">说明</el-button>
                 <el-button type="primary" @click="previewText">预览</el-button>
                 <el-button type="success" @click="generateText">生成</el-button>
             </div>
         </el-form>
     </el-card>
+    <!--说明抽屉-->
+    <el-drawer v-model="introduceDrawer" title="说明">
+        <div>
+            <p></p>
+        </div>
+        <!--TODO 说明没写完-->
+    </el-drawer>
 </template>
 
 <script>
@@ -60,6 +70,7 @@
                     title:"",
                     order:"",
                     mergeType:"diff",
+                    tips:'{原文} 的校对异文是 {异文}'
                 },
                 highlightSetting:{
                     ignoreCustom:false,
@@ -68,6 +79,7 @@
                     ignoreSign:true,
                 },
                 resList:[],
+                introduceDrawer:false,
             }
         },
         methods:{
@@ -94,15 +106,28 @@
                 })
                 htmlList.push(temp)
                 let htmlText= mergeHtml(htmlList)
-                let resText=htmlText+'\n||||||||||||||||||||||||||\n'+JSON.stringify(diffList)//将html和diff表组合
-                return resText
-
+                let resObj={
+                    'html':htmlText,
+                    'diffList':diffList
+                }
+                /*let resText=htmlText+'\n||||||||||||||||||||||||||\n'+JSON.stringify(diffList)//将html和diff表组合
+                return resText*/
+                return resObj
             },
             previewText(){
-                this.generateHtml()
-                localStorage.setItem('previewData',this.generateHtml())
+                let resObj= this.generateHtml()
+                resObj.title=this.form.title
+                resObj.tips=this.form.tips
+                localStorage.setItem('previewData',JSON.stringify(resObj))
                 ipc.send('openPreview')
             },
+            generateText(){
+                let resObj= this.generateHtml()
+                resObj.title=this.form.title
+                resObj.tips=this.form.tips
+                resObj.order=this.form.order
+                ipc.send('saveArticle',JSON.stringify(resObj))
+            }
         },
         mounted() {
             this.highlightSetting=JSON.parse(this.$route.query.ignore)

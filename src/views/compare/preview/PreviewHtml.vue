@@ -1,6 +1,11 @@
 <template>
     <div class="previewBackground ">
         <el-card class="textCard" shadow="always">
+            <template #header>
+                <div class="card-header">
+                    <h1 style="font-family: 'Adobe 繁黑體 Std B'">{{title}}</h1>
+                </div>
+            </template>
             <p v-html="html" @click="getDiff"></p>
         </el-card>
     </div>
@@ -12,20 +17,19 @@
         name: "PreviewHtml",
         data(){
           return{
-              previewData:'',
               html:'',
               diffTable:[],
+              title:'',
+              tips:'',
           }
         },
         methods:{
             splitData(){
-                let temp=this.previewData.split('\n||||||||||||||||||||||||||\n')
-                if(temp.length!==2){
-                    alert("出现错误")
-                }else {
-                    this.html=temp[0]
-                    this.diffTable=JSON.parse(temp[1])
-                }
+                let resObj=JSON.parse(localStorage.getItem('previewData'))
+                this.html=resObj.html
+                this.diffTable=resObj.diffList
+                this.title=resObj.title
+                this.tips=resObj.tips
             },
             getDiff(){
                 if(event.target.className==='text-diff'){
@@ -33,10 +37,11 @@
                     console.log(num)
                     for (let obj of this.diffTable){
                         if (obj.name===num){
+                            let msg=this.tips.replace('{原文}','<span style="font-weight:bold">'+obj.origin+'</span>').replace('{异文}','<span style="font-weight:bold">'+obj.compare+'</span>')
                             ElNotification({
                                 title: '校对',
                                 dangerouslyUseHTMLString: true,
-                                message: '<p class="notice" ">'+obj.origin+" 校对版本为 "+obj.compare+'</p>',
+                                message: msg,
                                 type: 'success',
                             })
                         }
@@ -46,7 +51,6 @@
 
         },
         mounted() {
-            this.previewData=localStorage.getItem('previewData')
             this.splitData()
         }
     }
@@ -54,7 +58,7 @@
 
 <style scoped>
     >>> .text-diff{
-        color: #ef6063;
+        color: #ef5b9c;
         text-decoration: none;
     }
     >>> .text-added{
@@ -88,6 +92,7 @@
         padding: 0px 64px;
         width: 70%;
         margin: 50px auto 0 auto;
+        background-color:#FAF7ED;
     }
     .previewBackground {
         background-color: #ede8d5;
@@ -97,6 +102,11 @@
         top: 0px;
         left: 0px;
         overflow-y: auto;
+
+    }
+    .card-header {
+        display: flex;
+        align-items: center;
 
     }
 

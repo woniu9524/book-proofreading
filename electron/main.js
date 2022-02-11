@@ -66,3 +66,17 @@ ipc.on('openPreview',()=>
   })
 
 })
+
+//保存
+const { dialog } = require('electron')
+const fs = require("fs");
+ipc.on('saveArticle',function (event, args) {
+  dialog.showSaveDialog({
+    title:'保存文件',
+  }).then(result=>{
+    console.log(result.filePath)
+    fs.writeFileSync(result.filePath+'.article',args)
+  }).catch(err=>{
+    console.log(err)
+  })
+})
