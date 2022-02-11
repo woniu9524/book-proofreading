@@ -8,7 +8,7 @@
                     :auto-upload="false"
                     accept=".txt,.docx"
                     :on-change="handleBook1"
-                    limit="2"
+
                     :show-file-list="false"
             >
                 <el-icon class="el-icon--upload"><upload-filled /></el-icon>
@@ -27,7 +27,6 @@
                     :auto-upload="false"
                     accept=".txt,.docx"
                     :on-change="handleBook2"
-                    limit="2"
                     :show-file-list="false"
             >
                 <el-icon class="el-icon--upload"><upload-filled /></el-icon>
@@ -42,12 +41,25 @@
     <div style="text-align: center;margin-top: 50px">
         <el-button type="success" round size="large" @click="startCompare">开 始 比 对</el-button>
     </div>
+    <!--进度条-->
+    <div class="progress-style">
+        <el-progress
+                :text-inside="true"
+                :stroke-width="24"
+                :percentage="percentage"
+        />
+    </div>
 </template>
 
 <script>
     import {UploadFilled} from "@element-plus/icons-vue";
     import {ElNotification} from "element-plus";
-    import {compareAllSentence, getCharId, getInvertedIndex, readSentences} from "../../js/tools/textHandle";
+    import {
+        compareOne,
+        getCharId,
+        getInvertedIndex,
+        readSentences
+    } from "../../js/tools/textHandle";
     let mammoth = require("mammoth");
     export default {
         components:{
@@ -58,6 +70,7 @@
             return{
                 book1:[],
                 book2:[],
+                percentage:0,
             }
         },
         methods:{
@@ -96,16 +109,17 @@
                     reader.readAsText(fileInfo.raw, "UTF-8");//读取文件
                     reader.onload = function(evt) { //读取完文件之后会回来这
                         fileString = evt.target.result; // 读取文件内容
+                        let article={};
+                        article['filename']=filename;
+                        article['filepath']=filepath;
+                        article['text']=fileString;
+                        if(flag===1){
+                            that.book1.push(article)
+                        }else {
+                            that.book2.push(article)
+                        }
                     }
-                    let article={};
-                    article['filename']=filename;
-                    article['filepath']=filepath;
-                    article['text']=fileString;
-                    if(flag===1){
-                        this.book1.push(article)
-                    }else {
-                        this.book2.push(article)
-                    }
+
                     ElNotification({
                         title: 'Success',
                         message:  filename+'，已添加~',
@@ -114,12 +128,16 @@
                 }
             },
             startCompare(){
+
                 let charTables=getCharId(this.book1,this.book2)//charsMap的value是idfList[i]
                 let indexObj=getInvertedIndex(this.book2,charTables.charsMap)//获取倒排索引表【字id：【句子id】】indexMap和sentences(句子和句子id)
                 let sentences1=readSentences(this.book1)
                 let sentences2=indexObj.sentences
-                compareAllSentence(sentences1,sentences2,indexObj.indexMap,charTables)
-
+                //开始比较
+                sentences1.forEach((sentenceObj,i) => {
+                    compareOne(sentenceObj.sentence,sentences2, indexObj.indexMap, charTables,10)
+                    this.percentage=((i/sentences1.length)*100).toFixed(1)
+                })
             },
         }
     }
@@ -132,5 +150,9 @@
     }
     .upload-part{
         display: inline-block;
+    }
+    .progress-style{
+        width: 800px;
+        margin: 30px auto;
     }
 </style>

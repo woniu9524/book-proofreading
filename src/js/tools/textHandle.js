@@ -138,12 +138,7 @@ export const getInvertedIndex = (bookList, charsMap) => {
     return {'indexMap': indexMap, 'sentences': sentences}
 }
 
-export const compareAllSentence = (sentences1,sentences2, indexMap, charTables,top=10) => {
-    sentences1.forEach((sentenceObj) => {
-        compareOne(sentenceObj.sentence,sentences2, indexMap, charTables,top)
-    })
 
-}
 export const compareOne = (sentence,sentences2, indexMap, charTables,top=10) => {
     let words = cutChar(sentence)
     let comparedSentenceIds = []//比较文本的句子列表
@@ -178,6 +173,6 @@ export const compareOne = (sentence,sentences2, indexMap, charTables,top=10) => 
     sortedList.forEach((obj)=>{
         let id=obj.id
         let compareSentence= sentences2[id].sentence//比较的句子
-        console.log(computeCosSimilar(sentence,compareSentence))
+        computeCosSimilar(sentence,compareSentence)
     })
 }
