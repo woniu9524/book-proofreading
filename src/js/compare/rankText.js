@@ -82,7 +82,7 @@ export const compareRecursion=(start,end,s1,arr2,thresholdOne,thresholdTwo,thres
         start+=2
     else
         start-=2
-    return compareRecursion(start,end,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,flag,sign)
+    return compareRecursion(start,end,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,flag,sign,ignoreSign,ignoreYi,ignoreFan)
 
 }
 
@@ -91,8 +91,8 @@ export const compareByWindowSize=(addStart,subStart,addEnd,subEnd,s1,arr2,thresh
     //text1和arr2的【addStart-》addEnd】和【subStart-》subEnd】进行比较
     //当相似度高于thresholdTwo且比较的字符串长度大于5时认为是正确的
     //当相似度高于thresholdOne且比较的字符串长度大于5加入正确的列表中，否则只认为是正确的
-    let resArr1=compareRecursion(addStart,addEnd,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,addStart,'+')
-    let resArr2=compareRecursion(subStart,subEnd,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,subStart,'-')
+    let resArr1=compareRecursion(addStart,addEnd,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,addStart,'+',ignoreSign,ignoreYi,ignoreFan)
+    let resArr2=compareRecursion(subStart,subEnd,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,subStart,'-',ignoreSign,ignoreYi,ignoreFan)
     return resArr1[2]>resArr2[2]?resArr1:resArr2
 }
 
