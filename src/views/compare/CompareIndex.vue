@@ -33,7 +33,6 @@
     import {ref,watch} from 'vue'
     import { ElNotification } from 'element-plus'
     import {useProfileStore} from '../../store'
-
     let mammoth = require("mammoth");
     export default {
         components:{
@@ -82,9 +81,7 @@
                                 count.value++;
                                 nextFlag.value=1;//可以进行下一步了
                             }
-
                         }).done();
-
                 }else {
                     let reader = new FileReader();//新建一个FileReader
                     reader.readAsText(fileInfo.raw, "UTF-8");//读取文件

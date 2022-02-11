@@ -7,6 +7,8 @@ import Yi2Fan from "../views/tools/Yi2Fan.vue";
 import Jian2Fan from "../views/tools/Jian2Fan.vue";
 import Setting from "../views/setting/Setting.vue";
 import PreviewHtml from "../views/compare/preview/PreviewHtml.vue";
+import BooksCompare from "../views/tools/BooksCompare.vue";
+import BooksSearch from "../views/tools/BooksSearch.vue";
 // 2. 定义路由配置
 const routes = [
     {
@@ -24,6 +26,8 @@ const routes = [
         path: "/layout", component: Layout, children: [
             {path:"/tools/jian",component:Jian2Fan},
             {path:"/tools/yi",component:Yi2Fan},
+            {path:"/tools/compare",component:BooksCompare},
+            {path:"/tools/search",component:BooksSearch},
         ]
     },
     {

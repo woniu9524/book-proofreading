@@ -12,8 +12,8 @@
                         <span>小工具</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item index="1-1" @click="toSearch">书本搜索</el-menu-item>
-                        <el-menu-item index="1-2" @click="toBookCompare">书本比对</el-menu-item>
+                        <el-menu-item index="1-1" @click="toBooksSearch">书本搜索</el-menu-item>
+                        <el-menu-item index="1-2" @click="toBooksCompare">书本比对</el-menu-item>
                         <el-menu-item index="1-3" @click="toJian">繁体简体转换</el-menu-item>
                         <el-menu-item index="1-4" @click="toYi">繁体异体转换</el-menu-item>
                     </el-menu-item-group>
@@ -66,6 +66,12 @@
             },
             toSetting(){
                 this.$router.push('/setting')
+            },
+            toBooksCompare(){
+                this.$router.push('/tools/compare')
+            },
+            toBooksSearch(){
+                this.$router.push('/tools/search')
             }
         }
     }

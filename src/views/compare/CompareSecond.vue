@@ -139,7 +139,7 @@
 <style scoped>
     .generate-form{
         width: 500px;
-        margin: 100px auto;
+        margin: 80px auto;
         text-align: center;
 
         /*background-color: deepskyblue;*/
