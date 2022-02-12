@@ -1,7 +1,7 @@
 /*
 * 计算相似度，这里使用余弦相似度
 * */
-import {charFanToJian,charYiToFan} from './translate'
+import {charCustom, charFanToJian, charYiToFan} from './translate'
 //除去标点和空格
 export const removeSign=(charList)=>{
     return  charList.filter((char) => {
@@ -58,7 +58,7 @@ export const computeWordVectorSimilar=(b1,b2)=>{
 }
 
 //计算两段文本的余弦相似度
-export const computeCosSimilar=(text1, text2,ignoreSign=true,ignoreYi=false,ignoreFan=false)=> {
+export const computeCosSimilar=(text1, text2,ignoreSign=true,ignoreYi=false,ignoreFan=false,ignoreCustom=false)=> {
     //分字
     let charList1 = [];
     let charList2 = [];
@@ -91,6 +91,15 @@ export const computeCosSimilar=(text1, text2,ignoreSign=true,ignoreYi=false,igno
             charList2[index]=charFanToJian(char)
         })
     }
+    //忽略自定义表
+    if(ignoreCustom){
+        charList1.forEach((char,index)=>{
+            charList1[index]=charCustom(char)
+        })
+        charList2.forEach((char,index)=>{
+            charList2[index]=charCustom(char)
+        })
+    }
     //转换成字向量
     let allCharList = Array.from(new Set(charList1.concat(charList2))); //两段文本合并后去重
     let b1=computeWordVector(allCharList,charList1)
@@ -98,4 +107,62 @@ export const computeCosSimilar=(text1, text2,ignoreSign=true,ignoreYi=false,igno
     //计算相似度
     let res=computeWordVectorSimilar(b1,b2)
     return isNaN(res)?-1:res//防止出现一个为空的情况(没想到真的能遇上，离谱)
+}
+
+export const computeCosSimilarForBookCompare=(charList1,charList2,setting)=>{
+    //忽略异体字
+    if(setting.ignoreYiTi){
+        charList1.forEach((char,index)=>{
+            charList1[index].char=charYiToFan(char.char)
+        })
+        charList2.forEach((char,index)=>{
+            charList2[index].char=charYiToFan(char.char)
+        })
+    }
+    //忽略繁体字
+    if(setting.ignoreFanTi){
+        charList1.forEach((char,index)=>{
+            charList1[index].char=charFanToJian(char.char)
+        })
+        charList2.forEach((char,index)=>{
+            charList2[index].char=charFanToJian(char.char)
+        })
+    }
+    //忽略自定义表
+    if(setting.ignoreCustom){
+        charList1.forEach((char,index)=>{
+            charList1[index].char=charCustom(char.char)
+        })
+        charList2.forEach((char,index)=>{
+            charList2[index].char=charCustom(char.char)
+        })
+    }
+    //转换成字向量
+    let allCharList = Array.from(new Set(charList1.concat(charList2))); //两段文本合并后去重
+    let b1=computeWordVectorForBookCompare(allCharList,charList1)
+    let b2=computeWordVectorForBookCompare(allCharList,charList2)
+    //计算相似度
+
+    let res=computeWordVectorSimilar(b1,b2)
+    return isNaN(res)?-1:res//防止出现一个为空的情况(没想到真的能遇上，离谱)
+}
+
+//计算字向量
+export const computeWordVectorForBookCompare=(allCharVector,charVector)=>{
+    let b = []
+    allCharVector.forEach((text0, i) => {
+        let flag = 0;
+        charVector.forEach((text1) => {
+            if (flag === 0) {
+                //第一次进入循环
+                b[i] = 0;
+                flag = 1;
+            }
+            if (text0.char === text1.char) {
+                b[i]++;
+            }
+        })
+        b[i]*=parseFloat(text0.idf)
+    })
+    return b
 }

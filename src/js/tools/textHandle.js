@@ -2,7 +2,7 @@
 * 1.分词统计idf
 *
 * */
-import {computeCosSimilar} from "../compare/computeSimilar";
+import {computeCosSimilar, computeCosSimilarForBookCompare} from "../compare/computeSimilar";
 
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');  // 有多种适配器可选择
@@ -104,18 +104,18 @@ export const getCharId = (bookList1, bookList2) => {
 
 export const readSentences = (bookList) => {
     let text = ''
-    bookList.forEach((article) => {
-        text += article.text
-    })
     let sentences = []
-    text.split('\n').forEach((p) => {
-        p.split('。').forEach((s) => {
-            sentences.push(s)
+    bookList.forEach((article) => {
+        article.text.split('\n').forEach((p) => {
+            p.split('。').forEach((s) => {
+                sentences.push({'sentence': s, 'filename': article.filename})
+            })
         })
     })
+
     let res = []
     sentences.forEach((sentence, i) => {
-        res.push({'id': i, 'sentence': sentence})
+        res.push({'id': i, 'sentenceDic': sentence})
     })
     return res
 }
@@ -125,7 +125,7 @@ export const getInvertedIndex = (bookList, charsMap) => {
     let sentences = readSentences(bookList)//获取句子列表[{id,sentence}]
     let indexMap = {}//倒排索引表
     sentences.forEach((sentenceObj) => {
-        let words = cutChar(sentenceObj.sentence)
+        let words = cutChar(sentenceObj.sentenceDic.sentence)
         words.forEach((char) => {
             let key = charsMap[char]
             if (indexMap[key]) {
@@ -139,7 +139,9 @@ export const getInvertedIndex = (bookList, charsMap) => {
 }
 
 
-export const compareOne = (sentence,sentences2, indexMap, charTables,top=10) => {
+export const compareOne = (sentence, sentences2, indexMap, charTables, setting) => {
+    let top = setting.top
+    let threshold = setting.threshold
     let words = cutChar(sentence)
     let comparedSentenceIds = []//比较文本的句子列表
     words.forEach((char) => {
@@ -152,9 +154,9 @@ export const compareOne = (sentence,sentences2, indexMap, charTables,top=10) => 
     })
     //统计句子id的出现频率
     let frequencyList = []
-    let frequencyDic=getEleNums(comparedSentenceIds)
-    for(let key in frequencyDic){
-        frequencyList.push({'id':key,'count':frequencyDic[key]})
+    let frequencyDic = getEleNums(comparedSentenceIds)
+    for (let key in frequencyDic) {
+        frequencyList.push({'id': key, 'count': frequencyDic[key]})
     }
     const compare = function (obj1, obj2) {
         let val1 = obj1.count;
@@ -167,12 +169,28 @@ export const compareOne = (sentence,sentences2, indexMap, charTables,top=10) => 
             return 0;
         }
     }
-    let sortedList=frequencyList.sort(compare)
-    sortedList=sortedList.length>top?sortedList.slice(0,top):sortedList//取前top个
+    let sortedList = frequencyList.sort(compare)
+    sortedList = sortedList.length > top ? sortedList.slice(0, top) : sortedList//取前top个
     //计算余弦相似度
-    sortedList.forEach((obj)=>{
-        let id=obj.id
-        let compareSentence= sentences2[id].sentence//比较的句子
-        computeCosSimilar(sentence,compareSentence)
+    let compareRes = []
+    sortedList.forEach((obj) => {
+        let id = obj.id
+        let compareSentence = sentences2[id].sentenceDic.sentence//比较的句子
+        let compareChars = cutChar(compareSentence)
+        let compareList1 = []
+        let compareList2 = []
+        words.forEach((char) => {
+            let idf = charTables.idfList[charTables.charsMap[char]]
+            compareList1.push({'char': char, 'idf': idf.idf})
+        })
+        compareChars.forEach((char) => {
+            let idf = charTables.idfList[charTables.charsMap[char]]
+            compareList2.push({'char': char, 'idf': idf.idf})
+        })
+        let cos = computeCosSimilarForBookCompare(compareList1, compareList2, setting)
+        if (cos >= threshold) {
+            compareRes.push({'sentence': compareSentence, 'sentenceId': id, 'cos': cos})
+        }
     })
+    return compareRes
 }
