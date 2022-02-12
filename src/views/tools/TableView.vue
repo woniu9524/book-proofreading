@@ -22,7 +22,7 @@
                         :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
                         height="510"
                         style="width: 100%">
-                    <el-table-column prop="firstNo" label="序号" width="80" />
+                    <el-table-column prop="firstNo" label="序号" width="80"/>
                     <el-table-column prop="firstText" label="底稿内容">
                         <template #default="scope">
                             <span v-html="scope.row.firstText"></span>
@@ -43,7 +43,8 @@
                             <el-tag
                                     :type="scope.row.similar < filterThreshold ? 'danger' : ''"
                                     disable-transitions
-                            >{{ scope.row.similar }}</el-tag
+                            >{{ scope.row.similar }}
+                            </el-tag
                             >
                         </template>
                     </el-table-column>
@@ -95,79 +96,91 @@
 
 <script>
     import {highlightHandler} from '../../js/compare/highlightText'
-    import {computeCosSimilar} from '../../js/compare/computeSimilar'
-    import {getTextList} from '../../js/compare/splitArticles.js'
-    import {rankSentence} from '../../js/compare/rankText.js'
     import {useProfileStore} from "../../store";
     import {storeToRefs} from 'pinia'
+    const ipc = require('electron').ipcRenderer
+    ipc.on('saveEnd',()=>{
+        alert("导出完成！")
+    })
     export default {
         name: "TableView",
-        data(){
-            return{
-                filterThreshold:0.5,
-                highlightSetting:{
-                    ignoreCustom:false,
-                    ignoreFanTi:false,
-                    ignoreYiTi:false,
-                    ignoreSign:true,
+        data() {
+            return {
+                filterThreshold: 0.5,
+                highlightSetting: {
+                    ignoreCustom: false,
+                    ignoreFanTi: false,
+                    ignoreYiTi: false,
+                    ignoreSign: true,
                 },
-                tableData:[],
-                currentPage:1,
-                pageSize:50,
-                settingHighlight:false,
-                resList:[],//纯文字的table
-                flag:'',
+                tableData: [],
+                currentPage: 1,
+                pageSize: 50,
+                settingHighlight: false,
+                resList: [],//纯文字的table
+                flag: '',
 
             }
         },
-        methods:{
-            resetHighlight(){
-                this.resList=JSON.parse(JSON.stringify(this.resList))
-                this.tableData=[]
-                this.resList.forEach((obj,i)=>{
-                    let ignore={'ignoreSign':this.highlightSetting.ignoreSign,'ignoreFanTi':this.highlightSetting.ignoreFanTi,'ignoreYiTi':this.highlightSetting.ignoreYiTi,'ignoreCustom':this.highlightSetting.ignoreCustom}
-                    let res= highlightHandler(obj.origin,obj.compare,ignore)
+        methods: {
+            resetHighlight() {
+                this.resList = JSON.parse(JSON.stringify(this.resList))
+                this.tableData = []
+                this.resList.forEach((obj, i) => {
+                    let ignore = {
+                        'ignoreSign': this.highlightSetting.ignoreSign,
+                        'ignoreFanTi': this.highlightSetting.ignoreFanTi,
+                        'ignoreYiTi': this.highlightSetting.ignoreYiTi,
+                        'ignoreCustom': this.highlightSetting.ignoreCustom
+                    }
+                    let res = highlightHandler(obj.origin, obj.compare, ignore)
                     this.tableData.push({
-                        'firstNo':obj.originFileName,
-                        'firstText':res.h1,
-                        'secondNo':obj.compareFileName,
-                        'secondText':res.h2,
-                        'similar':obj.cos,
-                        'no':i
+                        'firstNo': obj.originFileName,
+                        'firstText': res.h1,
+                        'secondNo': obj.compareFileName,
+                        'secondText': res.h2,
+                        'similar': obj.cos,
+                        'no': i
                     })
                 })
-                if(this.flag==='search'){
-                    this.orderRank()
-                }
-                this.settingHighlight=false
+
+                this.orderRank()
+
+                this.settingHighlight = false
             },
             //正序排序
-            orderRank(){
+            orderRank() {
                 this.tableData.sort(((a, b) => {
-                    return b.similar-a.similar;
+                    return b.similar - a.similar;
                 }))
 
             },
             //逆序排序
-            reverseRank(){
+            reverseRank() {
                 this.tableData.sort(((a, b) => {
-                    return a.similar-b.similar;
+                    return a.similar - b.similar;
                 }))
             },
             //恢复正常排序（底稿顺序）
-            normalRank(){
+            normalRank() {
                 this.tableData.sort(((a, b) => {
-                    return a.no-b.no;
+                    return a.no - b.no;
                 }))
             },
-            goBack(){
-                if(this.flag==='search'){
-                    this.$router.push({path: '/tools/search', query: {'books':this.$route.query.books}})
-                }else {
+            goBack() {
+                if (this.flag === 'search') {
+                    this.$router.push({path: '/tools/search', query: {'books': this.$route.query.books}})
+                } else {
                     this.$router.push('/tools/compare')
                 }
             },
-            writeOut(){
+            writeOut() {
+                let data = []
+                this.resList.forEach((line) => {
+                    data.push([line.originFileName, line.origin, line.compareFileName, line.compare, line.cos])
+                })
+                debugger
+                ipc.send('saveExcel', JSON.stringify(data))
 
             },
 
@@ -175,13 +188,13 @@
         mounted() {
             //全局配置
             const profileStore = useProfileStore() // 获取到store的实例
-            const {highlight}=storeToRefs(profileStore)
-            this.highlightSetting=highlight.value
+            const {highlight} = storeToRefs(profileStore)
+            this.highlightSetting = highlight.value
             //重置表格
             debugger
-            this.resList=JSON.parse(this.$route.query.table)
+            this.resList = JSON.parse(this.$route.query.table)
 
-            this.flag=this.$route.query.flag
+            this.flag = this.$route.query.flag
             this.resetHighlight()
 
 
@@ -190,23 +203,26 @@
 </script>
 
 <style scoped>
-    .first-header{
+    .first-header {
         padding: 0;
     }
-    .similar-table{
+
+    .similar-table {
         margin-top: 10px;
         padding: 0;
     }
-    .el-main{
+
+    .el-main {
         padding: 0 0 !important;
     }
-    .split-page{
+
+    .split-page {
         text-align: center;
         margin: auto;
         width: 300px;
     }
 
-    >>> .text-diff{
+    >>> .text-diff {
         background-color: #fbff00;
         display: inline-block;
         color: #f00;
@@ -215,7 +231,8 @@
         border-radius: 5px;
         border: 1px solid #ef6063;
     }
-    >>> .text-added{
+
+    >>> .text-added {
         background-color: #60C25E;
         display: inline-block;
         color: #2F4858;
@@ -224,7 +241,8 @@
         border-radius: 5px;
         border: 1px solid #00AD77;
     }
-    >>> .text-removed{
+
+    >>> .text-removed {
         background-color: #845EC2;
         display: inline-block;
         color: #F9F871;

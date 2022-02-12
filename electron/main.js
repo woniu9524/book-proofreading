@@ -1,6 +1,8 @@
 // electron/main.js
 
 // 控制应用生命周期和创建原生浏览器窗口的模组
+
+
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
 const ipc = require('electron').ipcMain
@@ -80,3 +82,38 @@ ipc.on('saveArticle',function (event, args) {
     console.log(err)
   })
 })
+
+ipc.on('saveExcel',function (event, args) {
+  dialog.showSaveDialog({
+    title:'保存文件',
+  }).then(result=>{
+    let path=result.filePath
+    if(path.slice(path.length-5,path.length)!=='.xlsx'){
+      path+='.xlsx'
+    }
+    writeExcel(JSON.parse(args),path)
+    event.reply("saveEnd");
+  }).catch(err=>{
+    console.log(err)
+  })
+
+})
+const xlsx = require('node-xlsx');
+const writeExcel=(data,filepath,header=['文件名','原文本','文件名','比较文本','相似度'])=>{
+  let excelList=[]
+  excelList.push(header)
+  data.forEach((lst)=>{
+    excelList.push(lst)
+  })
+  let bufferData=[{'name':'比较结果','data':excelList}]
+  let buffer = xlsx.build(bufferData);
+
+// 写入文件
+  fs.writeFile(filepath, buffer, function(err) {
+    if (err) {
+      console.log("Write failed: " + err);
+      return;
+    }
+
+  });
+}

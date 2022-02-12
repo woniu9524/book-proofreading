@@ -45,10 +45,22 @@
     </div>
     <!--按钮-->
     <div style="text-align: center;margin-top: 50px">
-        <el-button type="primary" round size="large" @click="settingDialog=true">设 置</el-button>
+        <el-button type="primary" round size="large" @click="settingDialog=true"> 设 置</el-button>
         <span style="margin: 0 10px 0 10px"></span>
         <el-button type="success" round size="large" @click="startCompare" :disabled="!btnCanBeClick">开 始 比 对
         </el-button>
+        <span style="margin: 0 10px 0 10px"></span>
+        <el-upload
+                style="display: inline-block;"
+                multiple
+                :auto-upload="false"
+                accept=".xlsx"
+                :on-change="importExcel"
+                :show-file-list="false"
+        >
+            <el-button round size="large">导入已有表</el-button>
+        </el-upload>
+
     </div>
     <div style="text-align: center;margin-top: 15px;" v-show="!btnCanBeClick">比对中……</div>
     <!--设置对话框-->
@@ -82,6 +94,7 @@
         getInvertedIndex,
         readSentences
     } from "../../js/tools/textHandle";
+    import {readExcel} from "../../js/tools/excelDo";
 
     let mammoth = require("mammoth");
     export default {
@@ -188,7 +201,25 @@
                     })
                     // this.percentage = ((i / sentences1.length) * 100).toFixed(0)
                 })
-                this.$router.push({path:'/tools/table',query: {'table':JSON.stringify(this.compareList)}})
+                this.$router.push({path: '/tools/table', query: {'table': JSON.stringify(this.compareList)}})
+            },
+            importExcel(fileInfo) {
+                const filepath = fileInfo.raw.path;//文件路径
+                let excelTable= readExcel(filepath)
+                let resList=[]
+                excelTable.forEach((line,i,arr)=>{
+                    if (i>0){
+                        resList.push({
+                            'originFileName': line[0],
+                            'origin': line[1],
+                            'compareFileName':line[2],
+                            'compare': line[3],
+                            'cos': line[4]
+                        })
+                    }
+                })
+
+                this.$router.push({path: '/tools/table', query: {'table': JSON.stringify(resList)}})
             },
 
         }
@@ -197,7 +228,7 @@
 
 <style scoped>
     .upload-body {
-        margin-top: 60px;
+        margin-top: 120px;
         text-align: center;
     }
 
