@@ -142,6 +142,7 @@ export const getInvertedIndex = (bookList, charsMap) => {
 export const compareOne = (sentence, sentences2, indexMap, charTables, setting) => {
     let top = setting.top
     let threshold = setting.threshold
+    let ignoreThreshold=setting.ignoreThreshold
     let words = cutChar(sentence)
     let comparedSentenceIds = []//比较文本的句子列表
     words.forEach((char) => {
@@ -187,8 +188,9 @@ export const compareOne = (sentence, sentences2, indexMap, charTables, setting) 
             let idf = charTables.idfList[charTables.charsMap[char]]
             compareList2.push({'char': char, 'idf': idf.idf})
         })
+        debugger
         let cos = computeCosSimilarForBookCompare(compareList1, compareList2, setting)
-        if (cos >= threshold) {
+        if (ignoreThreshold||cos >= threshold) {
             compareRes.push({'sentence': compareSentence, 'sentenceId': id, 'cos': cos})
         }
     })

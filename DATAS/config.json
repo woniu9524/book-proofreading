@@ -5,10 +5,10 @@
     "filterThreshold": "0.7",
     "lowThreshold": "0.3",
     "win": "100",
-    "ignoreFanTi": true,
-    "ignoreYiTi": true,
+    "ignoreFanTi": false,
+    "ignoreYiTi": false,
     "ignoreCustom": false,
-    "ignoreSign": true
+    "ignoreSign": false
   },
   "highlight": {
     "ignoreFanTi": true,

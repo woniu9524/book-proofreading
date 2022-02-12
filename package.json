@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^0.2.4",
+    "default-passive-events": "^2.0.0",
     "diff": "^5.0.0",
     "element-plus": "^2.0.1",
     "lowdb": "^1.0.0",

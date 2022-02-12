@@ -4,7 +4,7 @@ import 'element-plus/dist/index.css'
 import router from "./router/router"
 import App from './App.vue'
 import { createPinia } from 'pinia' // 从pinia中导入createPinia方法
-
+import 'default-passive-events'
 const app = createApp(App)
 app.use(router)
 app.use(ElementPlus)

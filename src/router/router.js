@@ -9,6 +9,7 @@ import Setting from "../views/setting/Setting.vue";
 import PreviewHtml from "../views/compare/preview/PreviewHtml.vue";
 import BooksCompare from "../views/tools/BooksCompare.vue";
 import BooksSearch from "../views/tools/BooksSearch.vue";
+import TableView from "../views/tools/TableView.vue";
 // 2. 定义路由配置
 const routes = [
     {
@@ -28,6 +29,7 @@ const routes = [
             {path:"/tools/yi",component:Yi2Fan},
             {path:"/tools/compare",component:BooksCompare},
             {path:"/tools/search",component:BooksSearch},
+            {path:"/tools/table",component:TableView},
         ]
     },
     {

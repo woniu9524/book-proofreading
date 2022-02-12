@@ -188,7 +188,7 @@
                     })
                     // this.percentage = ((i / sentences1.length) * 100).toFixed(0)
                 })
-                console.log(this.compareList)
+                this.$router.push({path:'/tools/table',query: {'table':JSON.stringify(this.compareList)}})
             },
 
         }
