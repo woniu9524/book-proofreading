@@ -9,6 +9,7 @@ export const readExcel=(filepath)=>{
         for(let rowId in sheet['data']){
             let row=sheet['data'][rowId];
             resList.push(row)
+            console.log(1)
         }
     });
     return resList

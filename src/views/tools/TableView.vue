@@ -191,7 +191,6 @@
             const {highlight} = storeToRefs(profileStore)
             this.highlightSetting = highlight.value
             //重置表格
-            debugger
             this.resList = JSON.parse(this.$route.query.table)
 
             this.flag = this.$route.query.flag

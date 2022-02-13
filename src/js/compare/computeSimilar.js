@@ -138,11 +138,18 @@ export const computeCosSimilarForBookCompare=(charList1,charList2,setting)=>{
         })
     }
     //转换成字向量
-    let allCharList = Array.from(new Set(charList1.concat(charList2))); //两段文本合并后去重
+    let allCharRes = new Set(charList1.concat(charList2));//两段文本合并后去重,这里是对象，不能直接用Set去重
+    let allCharList=[]
+    let obj={}
+    allCharRes.forEach((item,i,arr)=>{
+        if(!obj[item.char]){
+            allCharList.push(item)
+            obj[item.char]=true
+        }
+    })
     let b1=computeWordVectorForBookCompare(allCharList,charList1)
     let b2=computeWordVectorForBookCompare(allCharList,charList2)
     //计算相似度
-
     let res=computeWordVectorSimilar(b1,b2)
     return isNaN(res)?-1:res//防止出现一个为空的情况(没想到真的能遇上，离谱)
 }

@@ -188,7 +188,7 @@ export const compareOne = (sentence, sentences2, indexMap, charTables, setting) 
             let idf = charTables.idfList[charTables.charsMap[char]]
             compareList2.push({'char': char, 'idf': idf.idf})
         })
-        debugger
+        // debugger
         let cos = computeCosSimilarForBookCompare(compareList1, compareList2, setting)
         if (ignoreThreshold||cos >= threshold) {
             compareRes.push({'sentence': compareSentence, 'sentenceId': id, 'cos': cos})
