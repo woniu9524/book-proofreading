@@ -22,13 +22,17 @@
                     <el-icon><search /></el-icon>
                     <template #title>校对工具</template>
                 </el-menu-item>
-                <el-menu-item index="3">
+                <el-menu-item index="3" @click="toRead">
                     <el-icon><notebook /></el-icon>
                     <template #title>文本阅读</template>
                 </el-menu-item>
                 <el-menu-item index="4" @click="toSetting">
                     <el-icon><setting /></el-icon>
                     <template #title>全局配置</template>
+                </el-menu-item>
+                <el-menu-item index="5" @click="toTable">
+                    <el-icon><list /></el-icon>
+                    <template #title>表格设置</template>
                 </el-menu-item>
             </el-menu>
         </el-col>
@@ -48,6 +52,7 @@
         Search,
         Menu as IconMenu,
         Setting,
+        List,
     } from '@element-plus/icons-vue'
 
 </script>
@@ -72,6 +77,12 @@
             },
             toBooksSearch(){
                 this.$router.push('/tools/search')
+            },
+            toTable(){
+                this.$router.push('/setting/table')
+            },
+            toRead(){
+                this.$router.push('/book/index')
             }
         }
     }

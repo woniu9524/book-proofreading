@@ -10,6 +10,9 @@ import PreviewHtml from "../views/compare/preview/PreviewHtml.vue";
 import BooksCompare from "../views/tools/BooksCompare.vue";
 import BooksSearch from "../views/tools/BooksSearch.vue";
 import TableView from "../views/tools/TableView.vue";
+import TableSetting from "../views/setting/TableSetting.vue";
+import BookRead from "../views/read/BookRead.vue";
+import BookIndex from "../views/read/BookIndex.vue";
 // 2. 定义路由配置
 const routes = [
     {
@@ -35,6 +38,13 @@ const routes = [
     {
         path: "/layout", component: Layout, children: [
             {path:"/setting",component:Setting},
+            {path:"/setting/table",component:TableSetting},
+        ]
+    },
+    {
+        path: "/layout", component: Layout, children: [
+            {path:"/book/index",component:BookIndex},
+            {path:"/book/read",component:BookRead},
         ]
     },
     {

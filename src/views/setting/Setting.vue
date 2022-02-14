@@ -48,6 +48,7 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
+                <el-tag class="ml-2" type="danger" size="large">所有修改在下一次启动时生效！</el-tag>
             </el-form>
         </div>
     </el-card>
@@ -78,6 +79,7 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
+                <el-tag class="ml-2" type="danger" size="large">所有修改在下一次启动时生效！</el-tag>
             </el-form>
         </div>
     </el-card>
@@ -160,7 +162,7 @@
 <style scoped>
     .box-card{
         width: 95%;
-        margin: 10px auto;
+        margin: 15px auto;
     }
     .el-input{
         width: 100px;
