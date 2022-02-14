@@ -214,7 +214,7 @@
                 const profileStore = useProfileStore() // 获取到store的实例
                 const {articles,splitSign}=storeToRefs(profileStore)
                 let textLists= getTextList(articles.value[0].text,articles.value[1].text,splitSign.value)//得到分割后的文本
-                this.resList=rankSentence(textLists[0],textLists[1],100,0.9,0.7,0.3,this.rankSetting.ignoreSign,this.rankSetting.ignoreYiTi,this.rankSetting.ignoreFanTi)
+                this.resList=rankSentence(textLists[0],textLists[1],this.rankSetting)
                 this.resList=JSON.parse(JSON.stringify(this.resList))//这里做一下深拷贝，不然在双击更新的时候会同步更新通序号的那个数组里面的内容
                 this.tableData=[]
                 this.resList.forEach((arr)=>{

@@ -21,7 +21,7 @@ export const setWindow=(win)=>{
 }
 
 //递归判断
-export const compareRecursion=(start,end,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,flag,sign,ignoreSign=true,ignoreYi=false,ignoreFan=false)=>{
+export const compareRecursion=(start,end,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,flag,sign,ignore)=>{
     //递归出口
     if(sign==='+'){
         if (start>=end){
@@ -48,7 +48,7 @@ export const compareRecursion=(start,end,s1,arr2,thresholdOne,thresholdTwo,thres
         //每比较两个判断一次
         if(sign==='+'){
             if(start+i<end){
-                let similar=computeCosSimilar(s1[2],arr2[start+i][2],ignoreSign,ignoreYi,ignoreFan)
+                let similar=computeCosSimilar(s1[2],arr2[start+i][2],ignore)
                 if(similar>similar0){
                     similar0=similar
                     flag=start+i
@@ -58,7 +58,7 @@ export const compareRecursion=(start,end,s1,arr2,thresholdOne,thresholdTwo,thres
         }else {
             if(start-i>end){
 
-                let similar=computeCosSimilar(s1[2],arr2[start-i][2],ignoreSign,ignoreYi,ignoreFan)
+                let similar=computeCosSimilar(s1[2],arr2[start-i][2],ignore)
                 if(similar>similar0){
                     similar0=similar
                     flag=start-i
@@ -82,24 +82,28 @@ export const compareRecursion=(start,end,s1,arr2,thresholdOne,thresholdTwo,thres
         start+=2
     else
         start-=2
-    return compareRecursion(start,end,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,flag,sign,ignoreSign,ignoreYi,ignoreFan)
+    return compareRecursion(start,end,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,flag,sign,ignore)
 
 }
 
 //比较一段窗口取出相似度最高的
-export const compareByWindowSize=(addStart,subStart,addEnd,subEnd,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,ignoreSign=true,ignoreYi=false,ignoreFan=false)=>{
+export const compareByWindowSize=(addStart,subStart,addEnd,subEnd,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,ignore)=>{
     //text1和arr2的【addStart-》addEnd】和【subStart-》subEnd】进行比较
     //当相似度高于thresholdTwo且比较的字符串长度大于5时认为是正确的
     //当相似度高于thresholdOne且比较的字符串长度大于5加入正确的列表中，否则只认为是正确的
-    let resArr1=compareRecursion(addStart,addEnd,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,addStart,'+',ignoreSign,ignoreYi,ignoreFan)
-    let resArr2=compareRecursion(subStart,subEnd,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,subStart,'-',ignoreSign,ignoreYi,ignoreFan)
+    let resArr1=compareRecursion(addStart,addEnd,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,addStart,'+',ignore)
+    let resArr2=compareRecursion(subStart,subEnd,s1,arr2,thresholdOne,thresholdTwo,thresholdThree,similar0,subStart,'-',ignore)
     return resArr1[2]>resArr2[2]?resArr1:resArr2
 }
 
-export const rankSentence=(sentenceList1,sentenceList2,maxWin=100,thresholdOne=0.9,thresholdTwo=0.7,thresholdThree=0.3,ignoreSign=true,ignoreYi=false,ignoreFan=false)=>{
+export const rankSentence=(sentenceList1,sentenceList2,settings)=>{
     //sentenceList结构[  [paragraphLocation,sentenceLocation,sentence],……  ]
     // debugger
     //将窗口设置成奇数
+    let maxWin=settings.win
+    let thresholdOne=settings.highThreshold
+    let thresholdTwo=settings.filterThreshold
+    let thresholdThree=settings.lowThreshold
     maxWin=setWindow(maxWin)
     let halfWin=Math.floor((maxWin+1)/2)
     //第一次比较
@@ -112,7 +116,7 @@ export const rankSentence=(sentenceList1,sentenceList2,maxWin=100,thresholdOne=0
             //如果已经超出了sentenceList2的结尾了，设置相似度和位置位-1,不再比较
             resultList.push([s1,[-1,-1,s1[2]],-1])
         }else{
-            let similar0=computeCosSimilar(s1[2],sentenceList2[startLocation][2],ignoreSign,ignoreYi,ignoreFan)
+            let similar0=computeCosSimilar(s1[2],sentenceList2[startLocation][2],settings)
             // debugger
             if(similar0>=thresholdOne){
                 //大于thresholdOne认为是可靠的,添加进结果list中，并且更新起始位置
@@ -126,7 +130,7 @@ export const rankSentence=(sentenceList1,sentenceList2,maxWin=100,thresholdOne=0
                     subEnd=(startLocation-halfWin)<rightLocationList.slice(-1)[0][1]?rightLocationList.slice(-1)[0][1]:(startLocation-halfWin)//下限
                 }
                 let addEnd=(startLocation+halfWin)<sentenceList2.length-1?(startLocation+halfWin):sentenceList2.length-1//上限
-                let resArr=compareByWindowSize(startLocation,startLocation,addEnd,subEnd,s1,sentenceList2,thresholdOne,thresholdTwo,thresholdThree,similar0,ignoreSign,ignoreYi,ignoreFan)
+                let resArr=compareByWindowSize(startLocation,startLocation,addEnd,subEnd,s1,sentenceList2,thresholdOne,thresholdTwo,thresholdThree,similar0,settings)
                 resultList.push([resArr[0],resArr[1],resArr[2]])
                 if(resArr[3]>0){
                     rightLocationList.push([i,resArr[3]])//添加到正确的列表

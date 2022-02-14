@@ -58,7 +58,7 @@ export const computeWordVectorSimilar=(b1,b2)=>{
 }
 
 //计算两段文本的余弦相似度
-export const computeCosSimilar=(text1, text2,ignoreSign=true,ignoreYi=false,ignoreFan=false,ignoreCustom=false)=> {
+export const computeCosSimilar=(text1, text2,ignore)=> {
     //分字
     let charList1 = [];
     let charList2 = [];
@@ -69,12 +69,12 @@ export const computeCosSimilar=(text1, text2,ignoreSign=true,ignoreYi=false,igno
         charList2.push(char);
     }
     //除去标点和空格
-    if(ignoreSign){
+    if(ignore.ignoreSign){
         charList1=removeSign(charList1)
         charList2=removeSign(charList2)
     }
     //忽略异体字
-    if(ignoreYi){
+    if(ignore.ignoreYiTi){
         charList1.forEach((char,index)=>{
             charList1[index]=charYiToFan(char)
         })
@@ -83,7 +83,7 @@ export const computeCosSimilar=(text1, text2,ignoreSign=true,ignoreYi=false,igno
         })
     }
     //忽略繁体字
-    if(ignoreFan){
+    if(ignore.ignoreFanTi){
         charList1.forEach((char,index)=>{
             charList1[index]=charFanToJian(char)
         })
@@ -92,7 +92,7 @@ export const computeCosSimilar=(text1, text2,ignoreSign=true,ignoreYi=false,igno
         })
     }
     //忽略自定义表
-    if(ignoreCustom){
+    if(ignore.ignoreCustom){
         charList1.forEach((char,index)=>{
             charList1[index]=charCustom(char)
         })

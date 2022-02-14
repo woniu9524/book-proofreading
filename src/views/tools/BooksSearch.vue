@@ -7,7 +7,7 @@
                 placeholder="输入查找内容"
         ></el-input>
         <span style="margin: 0 2px"></span>
-        <el-button class="search-btn" type="primary" :icon="Search" size="large" @click="searchBooks">搜索</el-button>
+        <el-button class="search-btn" type="primary" size="large" @click="searchBooks">搜索</el-button>
         <el-button size="large" class="setting-btn" @click="settingDialog=true">设置</el-button>
         <!--设置对话框-->
         <el-dialog v-model="settingDialog" title="设置" class="setting-dialog" width="200px">
@@ -182,9 +182,7 @@
         }
     }
 </script>
-<script setup>
-    import {Search} from '@element-plus/icons-vue'
-</script>
+
 <style scoped>
     .search-box {
         margin: 120px auto 10px auto;
