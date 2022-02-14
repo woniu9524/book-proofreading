@@ -2,7 +2,7 @@
 
 // 控制应用生命周期和创建原生浏览器窗口的模组
 
-
+const webApp =require ('../express/express.js')
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
 const ipc = require('electron').ipcMain

@@ -2,7 +2,7 @@
     <el-card :body-style="{ padding: '0px' }" class="card-style">
         <el-image
                 style="width: 100%; height: 220px"
-                :src="url"
+                :src="'http://localhost:4000/bookCovers/'+url"
                 fit="fill"
                 class="image"
         ></el-image>
@@ -20,7 +20,7 @@
         props:{
             url:{
                 type:String,
-                default:'src/assets/bookCovers/default.png'
+                default:'http://localhost:4000/bookCovers/default.png'
             },
             bookName:{
                 type:String,
@@ -29,7 +29,7 @@
             bookId:{
                 type:String,
                 default:-1,
-            }
+            },
         },
         setup(props){
 
