@@ -1,5 +1,5 @@
 <template>
-    <el-card :body-style="{ padding: '0px' }" class="card-style">
+    <el-card :body-style="{ padding: '0px' }" class="card-style" @click="goBook">
         <el-image
                 style="width: 100%; height: 220px"
                 :src="'http://localhost:4000/bookCovers/'+url"
@@ -7,7 +7,7 @@
                 class="image"
         ></el-image>
         <div style="text-align: center">
-            <el-button type="text">{{bookName}}</el-button>
+            <el-button type="text" @click="goBook">{{bookName}}</el-button>
         </div>
     </el-card>
 </template>
@@ -31,8 +31,10 @@
                 default:-1,
             },
         },
-        setup(props){
-
+        methods:{
+            goBook(){
+                this.$router.push({path:'/book/read',query:{'bookId':this.bookId}})
+            }
         }
     })
 </script>

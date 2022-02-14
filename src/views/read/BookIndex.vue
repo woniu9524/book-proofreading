@@ -96,6 +96,7 @@
                     .write()
                 ElMessage.success("添加完成")
                 this.readBookList()
+                this.$router.go(0)
             },
             //上传图片
             addImage() {

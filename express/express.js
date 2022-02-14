@@ -22,5 +22,11 @@ app.get('/uploadBook',(req,res)=>{
     res.send('完成')
 })
 
+app.get('/findBook',(req,res)=>{
+    let bookName=req.query.bookName
+    let data=fs.readFileSync(abspath+'/books/'+bookName,'utf-8')
+    res.send(data)
+})
+
 app.listen(4000);
 console.log("4000端口")
