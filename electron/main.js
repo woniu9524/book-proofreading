@@ -2,7 +2,8 @@
 
 // 控制应用生命周期和创建原生浏览器窗口的模组
 
-const webApp =require ('../express/express.js')
+// const webApp =require ('../src/express/express.js')
+const webApp =require (process.cwd()+'/express/express.js')
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
 const ipc = require('electron').ipcMain
@@ -19,6 +20,7 @@ function createWindow () {
       preload: path.join(__dirname, 'preload.js')
     }
   })
+
 
   // 加载 index.html
   mainWindow.loadURL(

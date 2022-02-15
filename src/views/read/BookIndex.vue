@@ -91,8 +91,17 @@
                     // 读取文件内容
                     const fileString = e.target.result
                     // 接下来可对文件内容进行处理
-                    let json=JSON.parse(JSON.parse(fileString))
-                    let title=json.bookName
+                    let json
+                    let title
+                    if(type==='article'){
+                        json=JSON.parse(fileString)
+                        title=json.title
+                    }else{
+                        json=JSON.parse(JSON.parse(fileString))
+                        title=json.bookName
+                    }
+
+
                     db.get('index')
                         .push({
                             "id": new Date().getTime(),

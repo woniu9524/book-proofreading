@@ -23,7 +23,7 @@
     </HtmlPage>
     <el-drawer v-model="catalogueDrawer" title="目录" size="20%">
         <el-button type="text" @click="updatePage(i)" v-for="(item,i) in htmlData" style="display: block;margin: 10px">
-            {{i+1}}.{{item.title}}
+            {{item.order}}.{{item.title}}
         </el-button>
     </el-drawer>
 
