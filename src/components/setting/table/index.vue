@@ -30,9 +30,10 @@
         </el-dialog>
     </div>
     <div style="width: 600px;margin: auto">
-        <el-table :data="tableData" border style="width: 100%;height: 480px">
-            <el-table-column prop="arg1" :label="args.key"/>
-            <el-table-column prop="arg2" :label="args.value"/>
+        <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" border
+                  style="width: 100%;max-height: 480px">
+            <el-table-column :prop="tableProp.arg1" :label="args.key"/>
+            <el-table-column :prop="tableProp.arg2" :label="args.value"/>
             <el-table-column prop="do" label="操作">
                 <template #default="scope">
                     <el-button
@@ -45,11 +46,23 @@
                 </template>
             </el-table-column>
         </el-table>
+        <!--分页-->
+        <div class="split-page">
+            <el-pagination
+                    v-model:currentPage="currentPage"
+                    :page-size="pageSize"
+                    layout="total, prev, pager, next"
+                    :total="tableData.length"
+            >
+            </el-pagination>
+        </div>
     </div>
 </template>
 
 <script>
     import {defineComponent} from "@vue/runtime-core";
+    import {deleteWord, writeWord} from "../../../js/setting/table";
+    import {ElMessage} from "element-plus";
 
     export default defineComponent({
         name: "index",
@@ -64,6 +77,10 @@
                     key: "key",
                     value: "value",
                 }
+            },
+            tableProp: {
+                type: Object,
+                default: {},
             }
 
         },
@@ -74,20 +91,69 @@
                 addForm: {
                     arg1: '',
                     arg2: '',
-                    type: '',
                 },
+                currentPage: 1,
+                pageSize: 10,
+                tableCopy:[],
             }
         },
-        methods:{
-            addOne(){
+        methods: {
+            addOne() {
+                let word1 = this.addForm.arg1
+                let word2 = this.addForm.arg2
+                let arg1 = this.tableProp.arg1
+                let arg2 = this.tableProp.arg2
+                let table = 'custom'
+                if (arg1 === 'jian') {
+                    table = 'simple'
+                } else if (arg1 === 'yi') {
+                    table = 'diff'
+                }
+                let temp={}
+                temp[arg1] = word1
+                temp[arg2] = word2
+                writeWord(table, temp)
+                //this.tableData.push(temp)
+                ElMessage({
+                    type: 'success',
+                    message: "添加完成~",
+                })
+                this.addDialog=false
 
             },
-            search(){
+            search() {
+                // debugger
+                if(this.keyword===''){
+                    if(this.tableData.length<this.tableCopy.length){
+                        this.$emit('updateTable',this.tableCopy)
+                    }
+                }else {
+                    this.tableCopy=JSON.parse(JSON.stringify(this.tableData))
+                    for (let i=0;i<this.tableData.length;i++){
+                        if(this.tableData[i][this.tableProp.arg1]===this.keyword||this.tableData[i][this.tableProp.arg2]===this.keyword){
+                            this.$emit('updateTable',[this.tableData[i]])
+                            break
+                        }
+                    }
+                }
 
             },
-            deleteRow(){
-                this.tableData.value.splice(index, 1)
-                //TODO 在数据库中删除
+            deleteRow(index) {
+                let arg1 = this.tableProp.arg1
+                let word = this.tableData[index][arg1]
+                let table = 'custom'
+                if (arg1 === 'jian') {
+                    table = 'simple'
+                } else if (arg1 === 'yi') {
+                    table = 'diff'
+                }
+                this.tableData.splice(index, 1)
+                deleteWord(table, arg1, word)
+                ElMessage({
+                    type: 'success',
+                    message: "删除完成~",
+                })
+
             }
         }
     })
@@ -98,11 +164,13 @@
         margin: 10px auto 10px auto;
         text-align: center;
     }
+
     .search-input {
         display: inline-block;
         width: 400px;
     }
-    .add-btn{
+
+    .add-btn {
         display: inline-block;
         border: 1px solid dodgerblue;
     }
@@ -112,8 +180,15 @@
         border: 1px solid dodgerblue;
         border-radius: 0px 25px 25px 0px;
     }
+
     >>> input.el-input__inner {
         border: 1px solid dodgerblue;
         border-radius: 25px 0 0 25px;
+    }
+
+    .split-page {
+        text-align: center;
+        margin: auto;
+        width: 450px;
     }
 </style>
