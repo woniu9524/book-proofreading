@@ -83,6 +83,17 @@ ipc.on('saveArticle',function (event, args) {
   })
 })
 
+ipc.on('saveBook',function (event, args) {
+  dialog.showSaveDialog({
+    title:'保存文件',
+  }).then(result=>{
+    console.log(result.filePath)
+    fs.writeFileSync(result.filePath+'.book',args)
+  }).catch(err=>{
+    console.log(err)
+  })
+})
+
 ipc.on('saveExcel',function (event, args) {
   dialog.showSaveDialog({
     title:'保存文件',
@@ -116,4 +127,7 @@ const writeExcel=(data,filepath,header=['文件名','原文本','文件名','比
     }
 
   });
+
+
+
 }

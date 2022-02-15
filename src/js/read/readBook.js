@@ -26,5 +26,9 @@ export const readBookFile = async (id) => {
     return arg
 }
 
+export const deleteBookById=(id)=>{
+    db.get('index').remove({'id': parseInt(id)}).write()
+
+}
 
 

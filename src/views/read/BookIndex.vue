@@ -85,18 +85,28 @@
                 this.addImage()
                 this.addBook(fileName, filePath)
                 //建立关系表
-                db.get('index')
-                    .push({
-                        "id": new Date().getTime(),
-                        "title": "《初学记》",//TODO 解析那儿写好了再传到这里
-                        "bookName": fileName,
-                        "imageName": this.imageName===''?'default.png':this.imageName,
-                        "type": type
-                    })
-                    .write()
-                ElMessage.success("添加完成")
-                this.readBookList()
-                this.$router.go(0)
+                let reader = new FileReader()
+                reader.readAsText(file)
+                reader.onload = (e) => {
+                    // 读取文件内容
+                    const fileString = e.target.result
+                    // 接下来可对文件内容进行处理
+                    let json=JSON.parse(JSON.parse(fileString))
+                    let title=json.bookName
+                    db.get('index')
+                        .push({
+                            "id": new Date().getTime(),
+                            "title": title===""?"无":title,
+                            "bookName": fileName,
+                            "imageName": this.imageName===''?'default.png':this.imageName,
+                            "type": type
+                        })
+                        .write()
+                    ElMessage.success("添加完成")
+                    this.readBookList()
+                    this.$router.go(0)
+                }
+
             },
             //上传图片
             addImage() {
@@ -127,7 +137,7 @@
                 this.imageUrl=''
                 this.imageName=''
                 this.imagePath=''
-            }
+            },
         },
         mounted(){
             this.readBookList()

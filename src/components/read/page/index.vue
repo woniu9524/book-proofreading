@@ -35,6 +35,10 @@
                 type:String,
                 default:"{原文} 在校对版本中作 {异文}",
             },
+            keyword:{
+                type:String,
+                default:'',
+            }
 
         },
         methods: {

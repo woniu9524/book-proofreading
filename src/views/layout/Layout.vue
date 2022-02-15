@@ -16,6 +16,7 @@
                         <el-menu-item index="1-2" @click="toBooksCompare">书本比对</el-menu-item>
                         <el-menu-item index="1-3" @click="toJian">繁体简体转换</el-menu-item>
                         <el-menu-item index="1-4" @click="toYi">繁体异体转换</el-menu-item>
+                        <el-menu-item index="1-5" @click="toMakeBook">章节封装成书</el-menu-item>
                     </el-menu-item-group>
                 </el-sub-menu>
                 <el-menu-item index="2" @click="toCompare">
@@ -83,6 +84,9 @@
             },
             toRead(){
                 this.$router.push('/book/index')
+            },
+            toMakeBook(){
+                this.$router.push('/tools/make')
             }
         }
     }

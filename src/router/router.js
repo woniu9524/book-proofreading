@@ -13,6 +13,7 @@ import TableView from "../views/tools/TableView.vue";
 import TableSetting from "../views/setting/TableSetting.vue";
 import BookRead from "../views/read/BookRead.vue";
 import BookIndex from "../views/read/BookIndex.vue";
+import MakeBook from "../views/tools/MakeBook.vue";
 // 2. 定义路由配置
 const routes = [
     {
@@ -33,6 +34,7 @@ const routes = [
             {path:"/tools/compare",component:BooksCompare},
             {path:"/tools/search",component:BooksSearch},
             {path:"/tools/table",component:TableView},
+            {path:"/tools/make",component:MakeBook},
         ]
     },
     {
