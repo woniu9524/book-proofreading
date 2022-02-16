@@ -175,10 +175,26 @@ const addHighlightAttribute=(obj)=>{
     }
 }
 
+/*
 const addHighlight=(chars)=>{
     let highlightText=''
     chars.forEach((obj)=>{
         highlightText+=addHighlightAttribute(obj)
+    })
+    return highlightText
+}
+*/
+
+const addHighlightType=(chars,type='all')=>{
+    let highlightText=''
+    chars.forEach((obj)=>{
+        if(type==='diff'&&obj.type==='removed'){
+            obj.type='common'
+            highlightText+=addHighlightAttribute(obj)
+        }else {
+            highlightText+=addHighlightAttribute(obj)
+        }
+
     })
     return highlightText
 }
@@ -197,7 +213,8 @@ export const mergeTexts=(text1,text2,ignore,mergeType)=>{
     }
     let sameAttributeTexts= mergeSame(mergeText)//TODO 这里可以优化，让added removed周围的符号也变成一个类型
     //添加高亮
-    let htmlText=addHighlight(sameAttributeTexts)
+
+    let htmlText=addHighlightType(sameAttributeTexts,mergeType)
     return {'html':htmlText,'diffList':diffList}
 
 }
