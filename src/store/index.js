@@ -31,7 +31,7 @@ const db = low(adapter);
 //读取配置信息
 export const readConfig=()=>{
     let res={}
-    res['rank']=db.get('rank').value()
-    res['highlight']=db.get('highlight').value()
+    res['rank']=db.read().get('rank').value()
+    res['highlight']=db.read().get('highlight').value()
     return res
 }

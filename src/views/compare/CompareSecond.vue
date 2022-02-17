@@ -1,4 +1,8 @@
 <template>
+    <div style="margin:5px 0px 0px 10px">
+        <el-page-header :icon="ArrowLeft" title="返回上一步" @click="goBack"/>
+    </div>
+
     <el-card class="generate-form">
         <template #header>
             <div class="card-header">
@@ -51,9 +55,12 @@
     <!--说明抽屉-->
     <el-drawer v-model="introduceDrawer" title="说明">
         <div>
-            <p></p>
+            <p>如果只是一篇文章，序号就写1，如果是很多篇要封装成一本书，那就按照书本目录顺序些1 2 3……</p>
+            <p>方式选择：只合并不同表示只标记黄色的，而绿色和紫色的都不标记(因为它们大多数因为标点照成句子分割不均匀导致的)，推荐这样，速度快，而牺牲的只是可能个别有用；而合并不同加多余表示绿色和紫色也加上(如果有时间满满改把绿色和紫色在前面处理好可以选这个)</p>
+            <p>提示格式表示点击时，提示文本的格式，注意{原文}和{异文}代表原文和异文内容，不能随意改动，其他可以随意写</p>
+            <p>最后可以先预览，预览结果无误后可以生成出结果</p>
+            <p>在小工具下面有封装成书，多篇可以封装成一本书，然后再书籍阅读那里导入、阅读</p>
         </div>
-        <!--TODO 说明没写完-->
     </el-drawer>
 </template>
 
@@ -62,8 +69,12 @@
     import {storeToRefs} from "pinia";
     import {mergeHtml, mergeTexts} from "../../js/compare/mergeText";
     const ipc = require('electron').ipcRenderer
+    import { ArrowLeft } from '@element-plus/icons-vue'
     export default {
         name: "CompareSecond",
+        components:{
+          ArrowLeft,
+        },
         data(){
             return{
                 form:{
@@ -127,7 +138,10 @@
                 resObj.tips=this.form.tips
                 resObj.order=this.form.order
                 ipc.send('saveArticle',JSON.stringify(resObj))
-            }
+            },
+            goBack(){
+                this.$router.push({path:'/compare/first',query: {'table':JSON.stringify(this.resList)}})
+            },
         },
         mounted() {
             this.highlightSetting=JSON.parse(this.$route.query.ignore)

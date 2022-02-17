@@ -3,7 +3,7 @@
     "splitSign": "。；？",
     "highThreshold": "0.9",
     "filterThreshold": "0.7",
-    "lowThreshold": "0.3",
+    "lowThreshold": "0.35",
     "win": "100",
     "ignoreFanTi": false,
     "ignoreYiTi": false,

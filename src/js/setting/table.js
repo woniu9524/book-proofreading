@@ -4,7 +4,7 @@ const adapter = new FileSync('./DATAS/db.json'); // 申明一个适配器
 const db = low(adapter);
 
 export const readDB=(name)=>{
-    let res=db.get(name).value()
+    let res=db.read().get(name).value()
     return res
 }
 
@@ -20,7 +20,7 @@ export const writeWord=(table,map)=>{
 }
 
 export const writeStop=(textList)=>{
-    db.get('stop')
-        .assign(textList)
+    let res=db.set('stop',textList)
         .write()
+    console.log(res)
 }

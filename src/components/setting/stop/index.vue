@@ -38,7 +38,7 @@
             saveStop(){
                 let charList=[]
                 for (let char of this.textarea){
-                    if(char!==''){
+                    if(char!==" "){
                         charList.push(char)
                     }
                 }

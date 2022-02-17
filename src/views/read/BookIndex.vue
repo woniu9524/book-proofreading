@@ -142,7 +142,7 @@
             },
             //读取所以数据
             readBookList(){
-                this.bookList=db.get('index').value()
+                this.bookList=db.read().get('index').value()
                 this.imageUrl=''
                 this.imageName=''
                 this.imagePath=''

@@ -48,7 +48,6 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-tag class="ml-2" type="danger" size="large">所有修改在下一次启动时生效！</el-tag>
             </el-form>
         </div>
     </el-card>
@@ -79,7 +78,6 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-tag class="ml-2" type="danger" size="large">所有修改在下一次启动时生效！</el-tag>
             </el-form>
         </div>
     </el-card>

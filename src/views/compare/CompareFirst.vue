@@ -335,7 +335,13 @@
             this.rankSetting=rank.value//设置为全局配置中的
             this.highlightSetting=highlight.value
             //重置表格
-            this.resetTable()
+            if(typeof (this.$route.query.table)!=="undefined"){
+                this.resList=JSON.parse(this.$route.query.table)
+                this.resetHighlight()
+            }else{
+                this.resetTable()
+            }
+
 
 
         }

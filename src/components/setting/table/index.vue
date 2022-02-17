@@ -41,7 +41,7 @@
                             size="small"
                             @click.prevent="deleteRow(scope.$index)"
                     >
-                        Remove
+                        删除
                     </el-button>
                 </template>
             </el-table-column>
