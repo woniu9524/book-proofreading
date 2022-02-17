@@ -6,7 +6,7 @@
 #### 开发环境
 Vue3+Electron+lowdb+express+element plus
 
-#### 详细使用说明
+#### 详细的使用说明
 https://www.yuque.com/woniu-avesf/tvyxhx/sg007f
 
 #### 软件截图
