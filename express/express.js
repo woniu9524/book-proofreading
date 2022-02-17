@@ -27,6 +27,24 @@ app.get('/findBook',(req,res)=>{
     let data=fs.readFileSync(abspath+'/books/'+bookName,'utf-8')
     res.send(data)
 })
+app.get('/deleteBook',(req,res)=>{
+    let bookName=req.query.bookName
+    let imageName=req.query.imageName
+    fs.unlink(abspath+'/books/'+bookName, function(err){
+        if(err){
+            throw err;
+        }
+    })
+    if(imageName!=='default.png'){
+        fs.unlink(abspath+'/bookCovers/'+imageName, function(err){
+            if(err){
+                throw err;
+            }
+
+        })
+    }
+    res.send("完成")
+})
 
 app.listen(4000);
 console.log("4000端口")

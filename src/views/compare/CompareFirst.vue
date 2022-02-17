@@ -79,9 +79,10 @@
     <!--说明抽屉-->
     <el-drawer v-model="introduceDrawer" title="说明">
         <div>
-            <p><span style="color: red">&emsp;双击</span>某一行可以编辑用来校对的文本，<span style="color: deepskyblue">再次双击</span>保存修改</p>
+            <p><span style="color: red">&emsp;双击</span>某一行可以编辑文本，<span style="color: deepskyblue">再次双击</span>保存修改</p>
+            <p>如果排序出来的效果不好，可以修改排序设置中的值重置结果，比较较文本的的相似度和设置的阈值比较，高于阈值一表示比较的这两段文本是一定符号预期，高于阈值二表示大致是对的，而低于阈值三表示没有找到</p>
+            <p>忽略简体繁体异体打开效果可能能会好些，但是会让速度变慢。窗口值可以尽量小，但如果出现，前面一部分还是正常的，而从后面某一段开始大面积出错，这时候可以适当调高窗口值</p>
         </div>
-        <!--TODO 说明没写完-->
     </el-drawer>
     <!--排序设置对话框-->
     <el-dialog v-model="settingRank" title="排序设置" class="setting-dialog" width="400px">

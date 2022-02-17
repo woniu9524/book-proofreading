@@ -27,6 +27,22 @@ export const readBookFile = async (id) => {
 }
 
 export const deleteBookById=(id)=>{
+    let res=db.get('index').find({'id': parseInt(id)}).value()
+    let url = 'http://localhost:4000/deleteBook'
+    let arg = {}
+    axios
+        .get(url, {
+            params: {
+                'bookName': res.bookName,
+                'imageName':res.imageName
+            }
+        })
+        .then(function (response) {
+            arg.context = response.data;
+            arg.type = type
+        }).catch(function (error) {
+            console.log(error);
+        });
     db.get('index').remove({'id': parseInt(id)}).write()
 
 }

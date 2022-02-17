@@ -35,6 +35,10 @@
                     <el-icon><list /></el-icon>
                     <template #title>表格设置</template>
                 </el-menu-item>
+                <el-menu-item index="6" @click="openIntroduce">
+                    <el-icon><opportunity /></el-icon>
+                    <template #title>使用说明</template>
+                </el-menu-item>
             </el-menu>
         </el-col>
 
@@ -54,6 +58,7 @@
         Menu as IconMenu,
         Setting,
         List,
+        Opportunity
     } from '@element-plus/icons-vue'
 
 </script>
@@ -87,6 +92,11 @@
             },
             toMakeBook(){
                 this.$router.push('/tools/make')
+            },
+            openIntroduce(){
+                const { shell } = require('electron');
+                const uri = "https://www.yuque.com/woniu-avesf/tvyxhx/sg007f"
+                shell.openExternal(uri);
             }
         }
     }

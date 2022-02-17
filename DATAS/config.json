@@ -1,14 +1,14 @@
 {
   "rank": {
     "splitSign": "。；？",
-    "highThreshold": "0.98",
+    "highThreshold": "0.9",
     "filterThreshold": "0.7",
     "lowThreshold": "0.3",
     "win": "100",
     "ignoreFanTi": false,
     "ignoreYiTi": false,
     "ignoreCustom": false,
-    "ignoreSign": false
+    "ignoreSign": true
   },
   "highlight": {
     "ignoreFanTi": true,
