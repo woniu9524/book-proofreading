@@ -201,7 +201,7 @@
                     })
                     // this.percentage = ((i / sentences1.length) * 100).toFixed(0)
                 })
-                this.$router.push({path: '/tools/table', query: {'table': JSON.stringify(this.compareList)}})
+                this.$router.push({path: '/tools/table', query: {'table': JSON.stringify(this.compareList),'book1':JSON.stringify(this.book1),'book2':JSON.stringify(this.book2)}})
             },
             importExcel(fileInfo) {
                 const filepath = fileInfo.raw.path;//文件路径

@@ -48,6 +48,17 @@
                             >
                         </template>
                     </el-table-column>
+                    <el-table-column fixed="right" label="操作" width="120">
+                        <template #default="scope">
+                            <el-button
+                                    type="text"
+                                    size="small"
+                                    @click.prevent="openText(scope.$index)"
+                            >
+                                详情
+                            </el-button>
+                        </template>
+                    </el-table-column>
                 </el-table>
             </div>
             <!--分页-->
@@ -98,8 +109,9 @@
     import {highlightHandler} from '../../js/compare/highlightText'
     import {useProfileStore} from "../../store";
     import {storeToRefs} from 'pinia'
+
     const ipc = require('electron').ipcRenderer
-    ipc.on('saveEnd',()=>{
+    ipc.on('saveEnd', () => {
         alert("导出完成！")
     })
     export default {
@@ -119,7 +131,8 @@
                 settingHighlight: false,
                 resList: [],//纯文字的table
                 flag: '',
-
+                bookList1: [],
+                bookList2: [],
             }
         },
         methods: {
@@ -183,6 +196,42 @@
                 ipc.send('saveExcel', JSON.stringify(data))
 
             },
+            openText(index) {
+                let filename1 = this.tableData[index].firstNo
+                let filename2 = this.tableData[index].secondNo
+                let text1 = this.tableData[index].firstText.replace(/<.*?>/g,'')
+                let text2 = this.tableData[index].secondText.replace(/<.*?>/g,'')
+                let fileText1 = ''
+                let fileText2 = ''
+                debugger
+                for (let i = 0; i < this.bookList1.length; i++) {
+                    if (this.bookList1[i].filename === filename1) {
+                        fileText1 = this.bookList1[i].text
+                        break
+                    }
+                }
+                if (this.bookList1.length===0){
+                    //书籍搜索
+                    fileText1=text1
+                }
+                for (let i = 0; i < this.bookList2.length; i++) {
+                    if (this.bookList2[i].filename === filename2) {
+                        fileText2 = this.bookList2[i].text
+                        break
+                    }
+                }
+                if (this.bookList2.length===0){
+                    alert("导入表不能查看详情")
+                }else {
+                    ipc.send('openViewText')
+                    localStorage.clear()
+                    localStorage.setItem('fileText1',fileText1)
+                    localStorage.setItem('fileText2',fileText2)
+                    localStorage.setItem('text1',text1)
+                    localStorage.setItem('text2',text2)
+                }
+
+            },
 
         },
         mounted() {
@@ -195,6 +244,16 @@
 
             this.flag = this.$route.query.flag
             this.resetHighlight()
+            if (typeof (this.$route.query.book1) !== "undefined") {
+                this.bookList1 = JSON.parse(this.$route.query.book1)
+            }
+            if (typeof (this.$route.query.book2) !== "undefined") {
+                this.bookList2 = JSON.parse(this.$route.query.book2)
+            }
+            if(typeof (this.$route.query.books)!=="undefined"){
+                this.bookList1 = []
+                this.bookList2 = JSON.parse(this.$route.query.books)
+            }
 
 
         }
