@@ -144,7 +144,6 @@ const writeExcel=(data,filepath,header=['文件名','原文本','文件名','比
   })
   let bufferData=[{'name':'比较结果','data':excelList}]
   let buffer = xlsx.build(bufferData);
-
 // 写入文件
   fs.writeFile(filepath, buffer, function(err) {
     if (err) {
@@ -154,6 +153,20 @@ const writeExcel=(data,filepath,header=['文件名','原文本','文件名','比
 
   });
 
-
-
 }
+
+ipc.on('saveAll',function (event, args) {
+  dialog.showSaveDialog({
+    title:'保存文件',
+  }).then(result=>{
+    let path=result.filePath
+    if(path.slice(path.length-5,path.length)!=='.compare'){
+      path+='.compare'
+    }
+    fs.writeFileSync(path,args)
+    event.reply("saveEnd");
+  }).catch(err=>{
+    console.log(err)
+  })
+
+})

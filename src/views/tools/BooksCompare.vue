@@ -58,7 +58,18 @@
                 :on-change="importExcel"
                 :show-file-list="false"
         >
-            <el-button round size="large">导入已有表</el-button>
+            <el-button round size="large">导入excel表</el-button>
+        </el-upload>
+        <span style="margin: 0 10px 0 10px"></span>
+        <el-upload
+                style="display: inline-block;"
+                multiple
+                :auto-upload="false"
+                accept=".compare"
+                :on-change="importCompare"
+                :show-file-list="false"
+        >
+            <el-button round size="large">导入excel表+详情</el-button>
         </el-upload>
 
     </div>
@@ -95,7 +106,7 @@
         readSentences
     } from "../../js/tools/textHandle";
     import {readExcel} from "../../js/tools/excelDo";
-
+    const fs = require('fs');
     let mammoth = require("mammoth");
     export default {
         components: {
@@ -221,6 +232,12 @@
 
                 this.$router.push({path: '/tools/table', query: {'table': JSON.stringify(resList)}})
             },
+            importCompare(fileInfo) {
+                const filepath = fileInfo.raw.path;//文件路径
+                let data = fs.readFileSync(filepath, 'utf-8')
+                let jsonData=JSON.parse(data)
+                this.$router.push({path: '/tools/table', query: {'table': JSON.stringify(jsonData.table),'bookList1':JSON.stringify(jsonData.bookList1),'bookList2':JSON.stringify(jsonData.bookList2)}})
+            }
 
         }
     }

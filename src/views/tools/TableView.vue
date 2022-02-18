@@ -13,7 +13,8 @@
                     <el-menu-item index="4-3" @click="normalRank">按文件名顺序</el-menu-item>
                 </el-sub-menu>
                 <el-menu-item index="5" @click="settingHighlight=true">高亮设置</el-menu-item>
-                <el-menu-item index="6" @click="writeOut">导出</el-menu-item>
+                <el-menu-item index="6" @click="writeOutExcel">导出excel表</el-menu-item>
+                <el-menu-item index="7" @click="writeOutAll">导出excel表+详情</el-menu-item>
             </el-menu>
         </el-header>
         <el-main style="padding: 20px 10px">
@@ -187,14 +188,21 @@
                     this.$router.push('/tools/compare')
                 }
             },
-            writeOut() {
+            writeOutExcel() {
                 let data = []
                 this.resList.forEach((line) => {
                     data.push([line.originFileName, line.origin, line.compareFileName, line.compare, line.cos])
                 })
-                debugger
                 ipc.send('saveExcel', JSON.stringify(data))
 
+            },
+            writeOutAll(){
+
+                ipc.send('saveAll',JSON.stringify({
+                    'bookList1':this.bookList1,
+                    'bookList2':this.bookList2,
+                    'table':this.resList
+                }))
             },
             openText(index) {
                 let filename1 = this.tableData[index].firstNo
@@ -221,7 +229,7 @@
                     }
                 }
                 if (this.bookList2.length===0){
-                    alert("导入表不能查看详情")
+                    alert("只导入表不能查看详情")
                 }else {
                     ipc.send('openViewText')
                     localStorage.clear()
@@ -241,19 +249,26 @@
             this.highlightSetting = highlight.value
             //重置表格
             this.resList = JSON.parse(this.$route.query.table)
-
+            debugger
             this.flag = this.$route.query.flag
             this.resetHighlight()
-            if (typeof (this.$route.query.book1) !== "undefined") {
-                this.bookList1 = JSON.parse(this.$route.query.book1)
+            if(typeof (this.$route.query.bookList2)!=="undefined"){
+                this.bookList1=JSON.parse(this.$route.query.bookList1)
+                this.bookList2=JSON.parse(this.$route.query.bookList2)
+            }else {
+                //我知道这样套不好，但是……就这样吧
+                if (typeof (this.$route.query.book1) !== "undefined") {
+                    this.bookList1 = JSON.parse(this.$route.query.book1)
+                }
+                if (typeof (this.$route.query.book2) !== "undefined") {
+                    this.bookList2 = JSON.parse(this.$route.query.book2)
+                }
+                if(typeof (this.$route.query.books)!=="undefined"){
+                    this.bookList1 = []
+                    this.bookList2 = JSON.parse(this.$route.query.books)
+                }
             }
-            if (typeof (this.$route.query.book2) !== "undefined") {
-                this.bookList2 = JSON.parse(this.$route.query.book2)
-            }
-            if(typeof (this.$route.query.books)!=="undefined"){
-                this.bookList1 = []
-                this.bookList2 = JSON.parse(this.$route.query.books)
-            }
+
 
 
         }
