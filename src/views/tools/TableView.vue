@@ -205,6 +205,7 @@
                 }))
             },
             openText(index) {
+                index=(this.currentPage-1)*this.pageSize+index
                 let filename1 = this.tableData[index].firstNo
                 let filename2 = this.tableData[index].secondNo
                 let text1 = this.tableData[index].firstText.replace(/<.*?>/g,'')
