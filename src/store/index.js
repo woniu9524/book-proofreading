@@ -4,6 +4,7 @@ export const useProfileStore = defineStore('profile', { // 使用defineStore方�
         const config=readConfig()
         return {
             articles:[],
+            dictText:[],
             splitSign:config['rank'].splitSign,
             rank:config['rank'],
             highlight:config['highlight']

@@ -15,6 +15,10 @@ import BookRead from "../views/read/BookRead.vue";
 import BookIndex from "../views/read/BookIndex.vue";
 import MakeBook from "../views/tools/MakeBook.vue";
 import ViewText from "../views/tools/compare/ViewText.vue";
+import AllWordSetting from "../views/dict/allWord/AllWordSetting.vue";
+import KeyWordSetting from "../views/dict/keyWord/KeyWordSetting.vue";
+import AllWordShow from "../views/dict/allWord/AllWordShow.vue";
+
 // 2. 定义路由配置
 const routes = [
     {
@@ -48,6 +52,14 @@ const routes = [
         path: "/layout", component: Layout, children: [
             {path:"/book/index",component:BookIndex},
             {path:"/book/read",component:BookRead},
+        ]
+    },
+    {
+        path: "/layout", component: Layout, children: [
+            {path:"/dict/allWordSetting",component:AllWordSetting},
+            {path:"/dict/keyWordSetting",component:KeyWordSetting},
+            {path:"/dict/allWordShow",component:AllWordShow},
+
         ]
     },
     {

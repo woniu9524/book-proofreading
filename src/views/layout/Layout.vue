@@ -3,7 +3,7 @@
         <!--侧边栏-->
         <el-col :span="3">
             <el-menu
-                    default-active="2"
+                    default-active="3"
                     class="el-menu-vertical"
             >
                 <el-sub-menu index="1">
@@ -19,23 +19,33 @@
                         <el-menu-item index="1-5" @click="toMakeBook">章节封装成书</el-menu-item>
                     </el-menu-item-group>
                 </el-sub-menu>
-                <el-menu-item index="2" @click="toCompare">
+                <el-sub-menu index="2">
+                    <template #title>
+                        <el-icon><collection /></el-icon>
+                        <span>文本字典</span>
+                    </template>
+                    <el-menu-item-group>
+                        <el-menu-item index="2-1" @click="toAllWord">全文字典</el-menu-item>
+                        <el-menu-item index="2-2" @click="toKeyword">关键字字典</el-menu-item>
+                    </el-menu-item-group>
+                </el-sub-menu>
+                <el-menu-item index="3" @click="toCompare">
                     <el-icon><search /></el-icon>
                     <template #title>校对工具</template>
                 </el-menu-item>
-                <el-menu-item index="3" @click="toRead">
+                <el-menu-item index="4" @click="toRead">
                     <el-icon><notebook /></el-icon>
                     <template #title>文本阅读</template>
                 </el-menu-item>
-                <el-menu-item index="4" @click="toSetting">
+                <el-menu-item index="5" @click="toSetting">
                     <el-icon><setting /></el-icon>
                     <template #title>全局配置</template>
                 </el-menu-item>
-                <el-menu-item index="5" @click="toTable">
+                <el-menu-item index="6" @click="toTable">
                     <el-icon><list /></el-icon>
                     <template #title>表格设置</template>
                 </el-menu-item>
-                <el-menu-item index="6" @click="openIntroduce">
+                <el-menu-item index="7" @click="openIntroduce">
                     <el-icon><opportunity /></el-icon>
                     <template #title>使用说明</template>
                 </el-menu-item>
@@ -58,7 +68,8 @@
         Menu as IconMenu,
         Setting,
         List,
-        Opportunity
+        Opportunity,
+        Collection
     } from '@element-plus/icons-vue'
 
 </script>
@@ -77,6 +88,12 @@
             },
             toSetting(){
                 this.$router.push('/setting')
+            },
+            toAllWord(){
+                this.$router.push("/dict/allWordSetting")
+            },
+            toKeyWord(){
+                this.$router.push("/dict/keyWordSetting")
             },
             toBooksCompare(){
                 this.$router.push('/tools/compare')
