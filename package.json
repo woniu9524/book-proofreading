@@ -11,6 +11,7 @@
     "electron:build": "vite build && electron-builder"
   },
   "dependencies": {
+    "@antv/g6": "^4.6.18",
     "@element-plus/icons-vue": "^0.2.4",
     "@vue/runtime-core": "^3.2.31",
     "axios": "^0.26.0",
