@@ -8,9 +8,6 @@
     <el-tab-pane label="力导向图" name="graph">
       <dict-g6 :settingForm="settingForm"/>
     </el-tab-pane>
-    <el-tab-pane label="表格" name="table">
-
-    </el-tab-pane>
   </el-tabs>
 </template>
 

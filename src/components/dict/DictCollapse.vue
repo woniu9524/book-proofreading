@@ -3,7 +3,7 @@
     <el-col :span="20">
       <div class="dict-collapse" id="dict-collapse">
         <el-collapse v-model="activeNames" :accordion="accordion" @change="handleChange">
-          <el-collapse-item v-for="(item,index) in textDict" :title="item.name" :name="item.id" :id="item.name">
+          <el-collapse-item v-for="(item,index) in textDict" :title="item.name +'  ['+ item.textList.length+']'" :name="item.id" :id="item.name">
             <p v-for="(line,ind) in item.textList" v-html="line"></p>
           </el-collapse-item>
         </el-collapse>
@@ -18,22 +18,27 @@
             </div>
            <div>
              <div v-if="isHighLight">
-               <el-button color="#409EFF" @click="isHighLight=!isHighLight" plain style="width: 130px;">关闭关键字高亮</el-button>
+               <el-button color="#626aef" @click="isHighLight=!isHighLight" plain style="width: 130px;margin-top: 10px">关闭关键字高亮</el-button>
              </div>
              <div v-else>
-               <el-button color="#409EFF" @click="isHighLight=!isHighLight" plain style="width: 130px;">打开关键字高亮</el-button>
+               <el-button color="#67C23A" @click="isHighLight=!isHighLight" plain style="width: 130px;margin-top: 10px">打开关键字高亮</el-button>
              </div>
            </div>
             <div v-if="accordion">
-              <el-button color="#626aef" @click="accordion=!accordion" style="width: 130px;" plain>关闭手风琴模式
+              <el-button color="#626aef" @click="accordion=!accordion" style="width: 130px;margin-top: 10px" plain>关闭手风琴模式
               </el-button>
             </div>
             <div v-else>
-              <el-button color="#67C23A" @click="accordion=!accordion" style="width: 130px;" plain>打开手风琴模式
+              <el-button color="#67C23A" @click="accordion=!accordion" style="width: 130px;margin-top: 10px" plain>打开手风琴模式
+              </el-button>
+            </div>
+            <el-input v-model="keyword" placeholder="输入要查询的字" style="width: 130px;margin-top: 10px"/>
+            <div>
+              <el-button color="#409EFF" @click="outExcel" style="width: 130px;margin-top: 10px" plain>导出execl表
               </el-button>
             </div>
           </div>
-          <el-input v-model="keyword" placeholder="输入要查询的字" style="width: 130px;"/>
+
         </div>
       </el-affix>
     </el-col>
@@ -42,6 +47,10 @@
 
 
 <script>
+const ipc = require('electron').ipcRenderer
+ipc.on('saveDictEnd', () => {
+  alert("导出完成！")
+})
 export default {
   name: "DictCollapse",
   props: {
@@ -71,13 +80,14 @@ export default {
     },
     handleChange() {
       //手风琴模式和正常模式不一样，一个是string一个是array
-      let indexs = [];
-      if (this.accordion === true) {
-        indexs.push(this.activeNames)
+      let indexes = [];
+      console.log(typeof (this.activeNames))
+      if (typeof(this.activeNames)==="number") {
+        indexes.push(this.activeNames)
       } else {
-        indexs = this.activeNames;
+        indexes = this.activeNames;
       }
-      indexs.forEach((i) => {
+      indexes.forEach((i) => {
         let keyword = this.textDict[i - 1].name;
         let lines = this.textDict[i - 1].textList;
         //去除样式
@@ -91,6 +101,19 @@ export default {
           })
         }
       })
+    },
+    outExcel(){
+      let excelData=[]
+      this.textDict.forEach((obj)=>{
+        let tempList=[]
+        tempList.push(obj.name)
+        obj.textList.forEach((line)=>{
+          tempList.push(line)
+        })
+        excelData.push(tempList)
+      })
+      debugger
+      ipc.send('saveDictExcel',JSON.stringify(excelData))
     }
   },
   mounted() {
@@ -115,7 +138,6 @@ export default {
 .collapse-setting {
   margin-right: 20px;
   height: 300px;
-  background-color: #00AD77;
   text-align: center;
 }
 

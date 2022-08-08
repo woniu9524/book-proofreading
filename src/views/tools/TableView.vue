@@ -197,7 +197,6 @@
 
             },
             writeOutAll(){
-
                 ipc.send('saveAll',JSON.stringify({
                     'bookList1':this.bookList1,
                     'bookList2':this.bookList2,

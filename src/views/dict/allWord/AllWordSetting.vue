@@ -67,7 +67,7 @@
             const nextCanBeClick = ref(false)//下一步按钮是否可以点击
             const nextFlag = ref(0)//是否允许下一步flag
             const settingForm = ref({
-                splitInput: ref(profileStore.splitSign),
+                splitInput: ref('，。？；'),
                 filterInput: ref('（.）'),
                 minLength: ref(0),
                 removedInput: ref("1234567890.《》")
