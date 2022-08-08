@@ -18,6 +18,7 @@ import ViewText from "../views/tools/compare/ViewText.vue";
 import AllWordSetting from "../views/dict/allWord/AllWordSetting.vue";
 import KeyWordSetting from "../views/dict/keyWord/KeyWordSetting.vue";
 import AllWordShow from "../views/dict/allWord/AllWordShow.vue";
+import KeyWordShow from "../views/dict/keyWord/keyWordShow.vue";
 
 // 2. 定义路由配置
 const routes = [
@@ -59,6 +60,7 @@ const routes = [
             {path:"/dict/allWordSetting",component:AllWordSetting},
             {path:"/dict/keyWordSetting",component:KeyWordSetting},
             {path:"/dict/allWordShow",component:AllWordShow},
+            {path:"/dict/keyWordShow",component:KeyWordShow},
 
         ]
     },

@@ -108,7 +108,7 @@ export default {
     toAllWord() {
       this.$router.push("/dict/allWordSetting")
     },
-    toKeyWord() {
+    toKeyword() {
       this.$router.push("/dict/keyWordSetting")
     },
     toBooksCompare() {

@@ -32,11 +32,11 @@
               <el-button color="#67C23A" @click="accordion=!accordion" style="width: 130px;margin-top: 10px" plain>打开手风琴模式
               </el-button>
             </div>
-            <el-input v-model="keyword" placeholder="输入要查询的字" style="width: 130px;margin-top: 10px"/>
             <div>
               <el-button color="#409EFF" @click="outExcel" style="width: 130px;margin-top: 10px" plain>导出execl表
               </el-button>
             </div>
+            <el-input v-model="keyword" placeholder="输入要查询的字" style="width: 130px;margin-top: 10px"/>
           </div>
 
         </div>

@@ -179,3 +179,46 @@ export const genGraphData = (dictList, minSize = 20, maxSize = 50, nodeNums = -1
     console.log(data);
     return data
 }
+
+export const makeKeywordDict=(settingForm,text,keyword)=>{
+    /*
+    splitInput:"，。；？",
+    keywordSplitInput:"",
+    minLength:0,
+    */
+    //keyword分词
+    keyword=keyword.replace(/\r/g,'');
+    let keywordList=keyword.split('\n');
+    let keywordSplit=settingForm.keywordSplitInput+' ';
+    let keywordSplitSigns=keywordSplit.split('');
+    keywordSplitSigns.forEach((sign)=>{
+        let tempList=[]
+        keywordList.forEach((keyword)=>{
+            tempList=tempList.concat(keyword.split(' '));
+        })
+        keywordList=tempList;
+        tempList=[];
+    })
+    //text分句
+    let textList=splitBySigns(settingForm.splitInput,text);
+    //整合
+    let resList=[];
+    let count=0;
+    keywordList.forEach((keyword)=>{
+        count++;
+        let tempTextList=[]
+        textList.forEach((line)=>{
+            if(line.indexOf(keyword)>=0){
+                tempTextList.push(line);
+            }
+        })
+        if(tempTextList.length>0){
+            resList.push({
+                id: count,
+                name: keyword,
+                textList: [...new Set(tempTextList)]
+            })
+        }
+    })
+    return resList;
+}
