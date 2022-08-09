@@ -120,6 +120,9 @@ export default {
         let tempList = []
         tempList.push(obj.name)
         obj.textList.forEach((line) => {
+          //line.replace(.*?<\/span>/g, keyword)
+          line=line.replace(/<span class="highlight-text">/g,'')
+          line=line.replace(/<\/span>/g,'')
           tempList.push(line)
         })
         excelData.push(tempList)

@@ -144,7 +144,7 @@ ipc.on('saveExcel', function (event, args) {
         title: '保存文件',
     }).then(result => {
         let path = result.filePath
-        if (path.slice(path.length - 5, path.length) !== '.xlsx') {
+        if (path.length<=5||path.slice(path.length - 5, path.length) !== '.xlsx') {
             path += '.xlsx'
         }
         writeExcel(JSON.parse(args), path)
@@ -196,7 +196,7 @@ ipc.on('saveDictExcel', function (event, args) {
         title: '保存文件',
     }).then(result => {
         let path = result.filePath
-        if (path.slice(path.length - 5, path.length) !== '.xlsx') {
+        if (path.length<=5||path.slice(path.length - 5, path.length) !== '.xlsx') {
             path += '.xlsx'
         }
         writeDictExcel(JSON.parse(args), path)
