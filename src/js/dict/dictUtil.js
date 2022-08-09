@@ -30,8 +30,8 @@ export const splitBySigns = (splitSigns, texts) => {
 }
 
 export const makeDict = (removedChars, filterWords, textList) => {
-    //将filterWords变成列表，分隔符就用|
-    let filterList = filterWords.split('|');
+    //将filterWords变成列表，分隔符就用||
+    let filterList = filterWords.split('||');
     //建立字典
     let wordDic = {}
     textList.forEach((line) => {
@@ -49,12 +49,20 @@ export const makeDict = (removedChars, filterWords, textList) => {
 export const makeInvertedIndex = (removedChars, splitSigns, filterWords, minLength, texts) => {
     let textList = splitBySigns(splitSigns, texts);
     let wordDic = makeDict(removedChars, filterWords, textList);
+    //将filterWords变成列表，分隔符就用||
+    let filterList = filterWords.split('||');
+    debugger
     textList.forEach((line) => {
+        let originLine=line;
+        filterList.forEach((reg) => {
+            line = line.replace(eval("/" + reg + "/ig"), '');
+        })
+        line = removeWords(removedChars, line);
         if (line.length >= minLength) {
             for (let i = 0; i < line.length; i++) {
                 let word = line.charAt(i);
                 if (word in wordDic) {
-                    wordDic[word].push(line);
+                    wordDic[word].push(originLine);
                 }
             }
         }
@@ -136,7 +144,7 @@ export const genGraphData = (dictList, minSize = 20, maxSize = 50, nodeNums = -1
     let rankList = []
     allTexts.forEach((line) => {
         let tempList = []
-        for(let k=0;k<nodeNums;k++){
+        for (let k = 0; k < nodeNums; k++) {
             if (dictList[k].textList.indexOf(line) !== -1) {
                 tempList.push(String(dictList[k].id));
             }
@@ -166,53 +174,53 @@ export const genGraphData = (dictList, minSize = 20, maxSize = 50, nodeNums = -1
         })
     }
     //移除一些边
-    let newEdges=[]
-    edges.forEach((edge)=>{
-        edge.size=Math.round(edge.size/20)
-        if(edge.size>0){
+    let newEdges = []
+    edges.forEach((edge) => {
+        edge.size = Math.round(edge.size / 20)
+        if (edge.size > 0) {
             newEdges.push(edge)
         }
     })
     //合并
-    data.edges=newEdges;
-    data.nodes=nodes;
+    data.edges = newEdges;
+    data.nodes = nodes;
     console.log(data);
     return data
 }
 
-export const makeKeywordDict=(settingForm,text,keyword)=>{
+export const makeKeywordDict = (settingForm, text, keyword) => {
     /*
     splitInput:"，。；？",
     keywordSplitInput:"",
     minLength:0,
     */
     //keyword分词
-    keyword=keyword.replace(/\r/g,'');
-    let keywordList=keyword.split('\n');
-    let keywordSplit=settingForm.keywordSplitInput+' ';
-    let keywordSplitSigns=keywordSplit.split('');
-    keywordSplitSigns.forEach((sign)=>{
-        let tempList=[]
-        keywordList.forEach((keyword)=>{
-            tempList=tempList.concat(keyword.split(' '));
+    keyword = keyword.replace(/\r/g, '');
+    let keywordList = keyword.split('\n');
+    let keywordSplit = settingForm.keywordSplitInput + ' ';
+    let keywordSplitSigns = keywordSplit.split('');
+    keywordSplitSigns.forEach((sign) => {
+        let tempList = []
+        keywordList.forEach((keyword) => {
+            tempList = tempList.concat(keyword.split(' '));
         })
-        keywordList=tempList;
-        tempList=[];
+        keywordList = tempList;
+        tempList = [];
     })
     //text分句
-    let textList=splitBySigns(settingForm.splitInput,text);
+    let textList = splitBySigns(settingForm.splitInput, text);
     //整合
-    let resList=[];
-    let count=0;
-    keywordList.forEach((keyword)=>{
+    let resList = [];
+    let count = 0;
+    keywordList.forEach((keyword) => {
         count++;
-        let tempTextList=[]
-        textList.forEach((line)=>{
-            if(line.indexOf(keyword)>=0){
+        let tempTextList = []
+        textList.forEach((line) => {
+            if (line.indexOf(keyword) >= 0) {
                 tempTextList.push(line);
             }
         })
-        if(tempTextList.length>0){
+        if (tempTextList.length > 0) {
             resList.push({
                 id: count,
                 name: keyword,

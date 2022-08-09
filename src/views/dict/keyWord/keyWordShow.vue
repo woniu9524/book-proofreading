@@ -1,14 +1,15 @@
 <template>
-  <el-tabs v-model="activeName" class="dict-tabs">
+<!--  <el-tabs v-model="activeName" class="dict-tabs">
     <el-tab-pane label="折叠面板" name="collapse">
-      <dict-collapse
-          :text-dict="textDict"
-      />
+
     </el-tab-pane>
-<!--    <el-tab-pane label="力导向图" name="graph">-->
-<!--      <dict-g6 :settingForm="settingForm"/>-->
-<!--    </el-tab-pane>-->
-  </el-tabs>
+    <el-tab-pane label="力导向图" name="graph">
+      <dict-g6 :settingForm="settingForm"/>
+    </el-tab-pane>
+  </el-tabs>-->
+  <dict-collapse
+      :text-dict="textDict"
+  />
 </template>
 
 <script>

@@ -3,7 +3,7 @@
     <el-col :span="20">
       <div class="dict-collapse" id="dict-collapse">
         <el-collapse v-model="activeNames" :accordion="accordion" @change="handleChange">
-          <el-collapse-item v-for="(item,index) in textDict" :title="item.name +'  ['+ item.textList.length+']'" :name="item.id" :id="item.name">
+          <el-collapse-item v-for="(item,index) in textDict" :title="item.name +' ['+ item.textList.length+']'" :name="item.id" :id="item.name">
             <p v-for="(line,ind) in item.textList" v-html="line"></p>
           </el-collapse-item>
         </el-collapse>
@@ -66,13 +66,17 @@ export default {
   },
   methods: {
     searchWord(val) {
+      let flag=0;
       for (let index in this.textDict) {
         if (this.textDict[index].name === val) {
           this.activeNames = parseInt(index) + 1;
+          flag=1;
         }
       }
-      document.getElementById(val).scrollIntoView({block: "center", inline: "center"})
-      this.handleChange();
+      if(flag===1){
+        document.getElementById(val).scrollIntoView({block: "center", inline: "center"})
+        this.handleChange();
+      }
 
     },
     goHead() {
