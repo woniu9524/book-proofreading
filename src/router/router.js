@@ -19,7 +19,7 @@ import AllWordSetting from "../views/dict/allWord/AllWordSetting.vue";
 import KeyWordSetting from "../views/dict/keyWord/KeyWordSetting.vue";
 import AllWordShow from "../views/dict/allWord/AllWordShow.vue";
 import KeyWordShow from "../views/dict/keyWord/keyWordShow.vue";
-
+import DictTextView from "../views/dict/DictTextView.vue";
 // 2. 定义路由配置
 const routes = [
     {
@@ -28,46 +28,46 @@ const routes = [
     },
     {
         path: "/layout", component: Layout, children: [
-            {path:"/compare/index",component:CompareIndex},
-            {path:"/compare/first",component:CompareFirst},
-            {path:"/compare/second",component:CompareSecond},
+            {path: "/compare/index", component: CompareIndex},
+            {path: "/compare/first", component: CompareFirst},
+            {path: "/compare/second", component: CompareSecond},
         ]
     },
     {
         path: "/layout", component: Layout, children: [
-            {path:"/tools/jian",component:Jian2Fan},
-            {path:"/tools/yi",component:Yi2Fan},
-            {path:"/tools/compare",component:BooksCompare},
-            {path:"/tools/search",component:BooksSearch},
-            {path:"/tools/table",component:TableView},
-            {path:"/tools/make",component:MakeBook},
+            {path: "/tools/jian", component: Jian2Fan},
+            {path: "/tools/yi", component: Yi2Fan},
+            {path: "/tools/compare", component: BooksCompare},
+            {path: "/tools/search", component: BooksSearch},
+            {path: "/tools/table", component: TableView},
+            {path: "/tools/make", component: MakeBook},
         ]
     },
     {
         path: "/layout", component: Layout, children: [
-            {path:"/setting",component:Setting},
-            {path:"/setting/table",component:TableSetting},
+            {path: "/setting", component: Setting},
+            {path: "/setting/table", component: TableSetting},
         ]
     },
     {
         path: "/layout", component: Layout, children: [
-            {path:"/book/index",component:BookIndex},
-            {path:"/book/read",component:BookRead},
+            {path: "/book/index", component: BookIndex},
+            {path: "/book/read", component: BookRead},
         ]
     },
     {
         path: "/layout", component: Layout, children: [
-            {path:"/dict/allWordSetting",component:AllWordSetting},
-            {path:"/dict/keyWordSetting",component:KeyWordSetting},
-            {path:"/dict/allWordShow",component:AllWordShow},
-            {path:"/dict/keyWordShow",component:KeyWordShow},
-
+            {path: "/dict/allWordSetting", component: AllWordSetting},
+            {path: "/dict/keyWordSetting", component: KeyWordSetting},
+            {path: "/dict/allWordShow", component: AllWordShow},
+            {path: "/dict/keyWordShow", component: KeyWordShow},
         ]
     },
+    {path: "/dict/dictViewText", component: DictTextView},
     {
-        path: '/preview',component: PreviewHtml
+        path: '/preview', component: PreviewHtml
     },
-    {path:"/table/viewText",component:ViewText},
+    {path: "/table/viewText", component: ViewText},
 
 ];
 

@@ -35,7 +35,7 @@
     </el-form-item>
     <el-form-item label="分割关键字符号">
       <!--用来分割keyword的符号-->
-      <el-input v-model="settingForm.keywordInput" class="w-50 m-2" placeholder="默认按照换行和空格"/>
+      <el-input v-model="settingForm.keywordSplitInput" class="w-50 m-2" placeholder="默认按照换行和空格"/>
     </el-form-item>
     <el-form-item label="最短句子长度">
       <!--用来分割文本的符号-->
@@ -60,6 +60,7 @@
       },
       methods:{
           goNext(){
+            localStorage.setItem("dictText",this.text);
             this.$router.push({
               path: '/dict/keyWordShow',
               query: {

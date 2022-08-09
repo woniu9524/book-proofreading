@@ -92,6 +92,27 @@ ipc.on('openViewText', () => {
 
 })
 
+ipc.on('openDictViewText', () => {
+    let winA = new BrowserWindow({
+        width: 800,
+        height: 800,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,//加上这个vue才能用require
+            preload: path.join(__dirname, 'preload.js')
+        }
+    })
+    let winURL = NODE_ENV === 'development'
+        ? 'http://localhost:3000'
+        : `file://${path.join(__dirname, '../dist/index.html')}`
+    winA.loadURL(winURL + '#/dict/dictViewText');
+
+    winA.on("close", function () {
+        winA = null;
+    })
+
+})
+
 
 //保存
 const {dialog} = require('electron')
