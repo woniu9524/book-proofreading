@@ -45,7 +45,7 @@
     </el-form-item>
     <el-form-item label="移除无用字符">
       <!--用来分割文本的符号-->
-      <el-input v-model="settingForm.removedInput" class="w-50 m-2" placeholder="Please Input"/>
+      <el-input v-model="settingForm.removedInput" :rows="4" placeholder="Please Input" type="textarea"/>
     </el-form-item>
   </el-form>
 </template>
@@ -55,8 +55,12 @@ import {UploadFilled} from '@element-plus/icons-vue'
 import {ref, watch} from 'vue'
 import {ElNotification} from 'element-plus'
 import {useProfileStore} from '../../../store'
-
 let mammoth = require("mammoth");
+const low = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');  // 有多种适配器可选择
+
+const adapter = new FileSync('./DATAS/config.json'); // 申明一个适配器
+const db = low(adapter);
 export default {
   components: {
     UploadFilled,
@@ -107,6 +111,8 @@ export default {
           dictText['filename'] = filename;
           dictText['filepath'] = filepath;
           dictText['text'] = fileString;
+          fileString=fileString.replace(/\[/g,'');
+          fileString=fileString.replace(/]/g,'');
           localStorage.setItem("dictText", fileString);
           profileStore.dictText.push(dictText)
           ElNotification({
@@ -132,14 +138,43 @@ export default {
   methods: {
     //下一步
     goNext() {
-      const profileStore = useProfileStore() // 获取到store的实例
-      profileStore.splitSign = this.splitInput;
+      db.set('textDict.filter',this.settingForm.filterInput).write()
+      db.set('textDict.textSplit',this.settingForm.splitInput).write()
+      db.set('textDict.minLength',this.settingForm.minLength).write()
+      db.set('textDict.removed',this.settingForm.removedInput).write()
       this.$router.push({
         path: '/dict/allWordShow',
         query: {'settingForm': JSON.stringify(this.settingForm)}
       })
+    },
+    readConfig(){
+      try {
+        console.dir(db.__wrapped__.textDict)
+        let filter=db.__wrapped__.textDict.filter
+        let textSplit=db.__wrapped__.textDict.textSplit
+        let minLength=db.__wrapped__.textDict.minLength
+        let removed=db.__wrapped__.textDict.removed
+        debugger
+        if(filter!=="undefined"&&filter.length>0){
+          this.settingForm.filterInput=filter;
+        }
+        if(textSplit!=="undefined"&&textSplit.length>0){
+          this.settingForm.splitInput=textSplit;
+        }
+        if(removed!=="undefined"&&removed.length>0){
+          this.settingForm.removedInput=removed;
+        }
+        if(minLength!=="undefined"){
+          this.settingForm.minLength=minLength;
+        }
+      }catch (e){
+
+      }
     }
   },
+  mounted(){
+    this.readConfig();
+  }
 
 }
 

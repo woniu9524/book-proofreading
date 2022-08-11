@@ -15,5 +15,12 @@
     "ignoreYiTi": true,
     "ignoreCustom": false,
     "ignoreSign": true
+  },
+  "textDict": {
+    "filter": "（.）||（..）",
+    "textSplit": "，。；？",
+    "minLength": 0,
+    "removed": "1234567890.《》、。。？，“”〈〉",
+    "keywordSplit": ""
   }
 }

@@ -16,6 +16,7 @@ export const removeWords = (removeWords, texts) => {
 }
 //按照符号断句
 export const splitBySigns = (splitSigns, texts) => {
+    texts=texts.replace(/？）/g,"asdfghj");
     let textList = texts.split('\n');
     let tempList = [];
     for (let i = 0; i < splitSigns.length; i++) {
@@ -26,6 +27,9 @@ export const splitBySigns = (splitSigns, texts) => {
         textList = tempList;
         tempList = [];
     }
+    textList.forEach((line,index,array)=>{
+        textList[index]=line.replace(/asdfghj/g,'？）');
+    })
     return textList;
 }
 
@@ -40,7 +44,19 @@ export const makeDict = (removedChars, filterWords, textList) => {
         })
         line = removeWords(removedChars, line);
         for (let i = 0; i < line.length; i++) {
-            wordDic[line.charAt(i)] = [];
+            //一个字分成两部分的情况
+            if (line.charAt(i)==='['){
+                i++;
+                let temp_word=""
+                while (line.charAt(i)!==']'){
+                    temp_word+=line.charAt(i);
+                    i++;
+                }
+                wordDic[temp_word] = [];
+            }else {
+                wordDic[line.charAt(i)] = [];
+            }
+
         }
     })
     return wordDic;
@@ -60,8 +76,21 @@ export const makeInvertedIndex = (removedChars, splitSigns, filterWords, minLeng
         line = removeWords(removedChars, line);
         if (line.length >= minLength) {
             for (let i = 0; i < line.length; i++) {
-                let word = line.charAt(i);
+                let word;
+                if (line.charAt(i)==='['){
+                    i++;
+                    let temp_word=""
+                    while (line.charAt(i)!==']'){
+                        temp_word+=line.charAt(i);
+                        i++;
+                    }
+                    word=temp_word;
+                }else {
+                    word= line.charAt(i);
+                }
                 if (word in wordDic) {
+                    originLine=originLine.replace(/\[/g,'')
+                    originLine=originLine.replace(/]/g,'')
                     wordDic[word].push(originLine);
                 }
             }

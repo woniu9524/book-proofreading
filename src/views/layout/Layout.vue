@@ -27,11 +27,11 @@
               <el-icon>
                 <collection/>
               </el-icon>
-              <span>文本字典</span>
+              <span>文本辞典</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="2-1" @click="toAllWord">全文字典</el-menu-item>
-              <el-menu-item index="2-2" @click="toKeyword">关键字字典</el-menu-item>
+              <el-menu-item index="2-1" @click="toAllWord">全文辞典</el-menu-item>
+              <el-menu-item index="2-2" @click="toKeyword">关键词辞典</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
           <el-menu-item index="3" @click="toCompare">
