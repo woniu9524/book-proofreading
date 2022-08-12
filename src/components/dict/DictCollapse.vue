@@ -107,8 +107,10 @@ export default {
   methods: {
     searchWord(val) {
       let flag = 0;
+      debugger
       for (let index in this.textDict) {
         if (this.textDict[index].name === val) {
+          debugger
           if(typeof (this.activeNames)==="object"){
             this.activeNames=[parseInt(this.textDict[index].id)];
           }else{
@@ -305,7 +307,7 @@ export default {
   },
   watch: {
     keyword(newName, oldName) {
-      if (newName.length === 1) {
+      if (newName.length >= 1) {
         this.searchWord(newName);
       }
     },
