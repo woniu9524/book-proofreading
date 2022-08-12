@@ -257,6 +257,7 @@ export const makeKeywordDict = (settingForm, text, keyword) => {
     //整合
     let resList = [];
     let count = 0;
+    keywordList=[...new Set(keywordList)];
     keywordList.forEach((keyword) => {
         count++;
         let tempTextList = []

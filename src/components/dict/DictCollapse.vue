@@ -50,6 +50,7 @@
             </el-button>
             <el-button color="#409EFF" @click="goHead" plain style="width: 130px;margin: 15px 0 0 0">返回顶部
             </el-button>
+            <el-tag type="info" plain style="width: 130px;margin: 15px 0 0 0">共：{{textDict.length}} 词</el-tag>
           </el-form>
           <el-dialog
               v-model="dialogShow"
@@ -68,9 +69,9 @@
             <div style="padding: 10px 0 10px 0">
               <el-button type="primary" plain round @click="numReverseOrder">数量逆序</el-button>
             </div>
-<!--            <div style="padding: 10px 0 10px 0">-->
-<!--              <el-button type="primary" plain round @click="recoverOrder">恢复默认</el-button>-->
-<!--            </div>-->
+            <div style="padding: 10px 0 10px 0">
+              <el-button type="primary" plain round @click="recoverOrder">恢复默认</el-button>
+            </div>
           </el-dialog>
         </div>
       </el-affix>
@@ -100,6 +101,7 @@ export default {
       textDictCopy: [],
       dialogShow: false,
       zimuShow:false,
+      objLocation:{},
     }
   },
   methods: {
@@ -109,6 +111,7 @@ export default {
         if (this.textDict[index].name === val) {
           this.activeNames = parseInt(index) + 1;
           flag = 1;
+          break
         }
       }
       if (flag === 1) {
@@ -121,17 +124,34 @@ export default {
       document.getElementById(this.textDict[0].name).scrollIntoView({block: "center", inline: "center"})
     },
     handleChange() {
+      debugger
+      if (JSON.stringify(this.objLocation)==='{}'){
+        this.textDict.forEach((obj,index)=>{
+          this.objLocation[obj.id]=index;
+        })
+        console.log(this.objLocation)
+      }
       //手风琴模式和正常模式不一样，一个是string一个是array
       let indexes = [];
-      console.log(typeof (this.activeNames))
       if (typeof (this.activeNames) === "number") {
         indexes.push(this.activeNames)
       } else {
         indexes = this.activeNames;
       }
+      debugger
       indexes.forEach((i) => {
-        let keyword = this.textDict[i - 1].name;
-        let lines = this.textDict[i - 1].textList;
+        debugger
+        let keyword=this.textDict[this.objLocation[i]].name;
+        let lines=this.textDict[this.objLocation[i]].textList;
+        // this.textDict.forEach((obj)=>{
+        //   debugger
+        //   if(obj.id===i){
+        //     debugger
+        //     keyword = obj.name;
+        //     lines = obj.textList;
+        //   }
+        // })
+
         //去除样式
         lines.forEach((line, index) => {
           lines[index] = line.replace(/<span class="highlight-text">.*?<\/span>/g, keyword)
@@ -192,6 +212,11 @@ export default {
         }
 
       })
+      debugger
+      this.objLocation={}
+      this.textDict.forEach((obj,index)=>{
+        this.objLocation[obj.id]=index;
+      })
       this.zimuShow=true;
       this.dialogShow=false;
     },
@@ -222,6 +247,10 @@ export default {
         }
 
       })
+      this.objLocation={}
+      this.textDict.forEach((obj,index)=>{
+        this.objLocation[obj.id]=index;
+      })
       this.zimuShow=true;
       this.dialogShow=false;
     },
@@ -233,6 +262,10 @@ export default {
       this.textDict.sort((a,b)=>{
         return a.textList.length-b.textList.length;
       })
+      this.objLocation={}
+      this.textDict.forEach((obj,index)=>{
+        this.objLocation[obj.id]=index;
+      })
       this.zimuShow=false;
       this.dialogShow=false;
     },
@@ -243,14 +276,24 @@ export default {
       this.textDict.sort((a,b)=>{
         return b.textList.length-a.textList.length;
       })
+      this.objLocation={}
+      this.textDict.forEach((obj,index)=>{
+        this.objLocation[obj.id]=index;
+      })
       this.zimuShow=false;
       this.dialogShow=false;
     },
-    // recoverOrder(){
-    //   this.$emit('update:textDict', this.textDictCopy)
-    //   this.zimuShow=false;
-    //   this.dialogShow=false;
-    // }
+    recoverOrder(){
+      this.textDict.sort((a,b)=>{
+        return a.id-b.id;
+      })
+      this.objLocation={}
+      this.textDict.forEach((obj,index)=>{
+        this.objLocation[obj.id]=index;
+      })
+      this.zimuShow=false;
+      this.dialogShow=false;
+    }
 
   },
   mounted() {

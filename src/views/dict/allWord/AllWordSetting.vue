@@ -16,7 +16,7 @@
       </el-icon>
       <div class="el-upload__text">
         <span style="font-style: inherit;color: red">拖拽</span>或<span
-          style="font-style: inherit;color: deepskyblue">点击</span>上传文本
+          style="font-style: inherit;color: deepskyblue">点击</span>上传文本(.txt或.docx)
       </div>
     </el-upload>
   </div>
