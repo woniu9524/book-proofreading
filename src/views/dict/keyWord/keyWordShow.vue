@@ -8,7 +8,7 @@
     </el-tab-pane>
   </el-tabs>-->
   <dict-collapse
-      :text-dict="textDict"
+      :text-dict.sync="textDict"
   />
 </template>
 

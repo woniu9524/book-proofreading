@@ -1,4 +1,6 @@
 // //移除无用字符
+import {pinyin} from "pinyin-pro";
+
 export const removeWords = (removeWords, texts) => {
     removeWords = removeWords + ' \r';
     let removeList = removeWords.split("");
@@ -18,9 +20,22 @@ export const removeWords = (removeWords, texts) => {
 export const splitBySigns = (splitSigns, texts) => {
     texts=texts.replace(/？）/g,"asdfghj");
     let textList = texts.split('\n');
+    //两个的，优先级高[]括起来
+    let exp=/\[.*?]/g;
+    let result;
+    let high_sign=[]
+    while ((result=exp.exec(splitSigns))!=null){
+        high_sign.push(result);
+    }
+    splitSigns=splitSigns.replace(/\[.*?]/g,'')
+    high_sign.forEach((sign)=>{
+
+    })
     let tempList = [];
-    for (let i = 0; i < splitSigns.length; i++) {
-        let sign = splitSigns.charAt(i);
+    let splitSignList=splitSigns.split('')
+    splitSignList=splitSignList.concat(high_sign)
+    for (let i = 0; i < splitSignList.length; i++) {
+        let sign = splitSignList[i];
         textList.forEach((text) => {
             tempList = tempList.concat(text.split(sign));
         })
@@ -104,6 +119,7 @@ export const makeInvertedIndex = (removedChars, splitSigns, filterWords, minLeng
         dictList.push({
             id: count,
             name: key,
+            initial:pinyin(key, { toneType: 'none', type: 'array' })[0],
             textList: [...new Set(wordDic[key])]
         })
     }
@@ -253,6 +269,7 @@ export const makeKeywordDict = (settingForm, text, keyword) => {
             resList.push({
                 id: count,
                 name: keyword,
+                initial:pinyin(keyword, { toneType: 'none', type: 'array' })[0],
                 textList: [...new Set(tempTextList)]
             })
         }
