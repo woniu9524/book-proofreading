@@ -109,7 +109,11 @@ export default {
       let flag = 0;
       for (let index in this.textDict) {
         if (this.textDict[index].name === val) {
-          this.activeNames = parseInt(index) + 1;
+          if(typeof (this.activeNames)==="object"){
+            this.activeNames=[parseInt(this.textDict[index].id)];
+          }else{
+            this.activeNames = parseInt(this.textDict[index].id);
+          }
           flag = 1;
           break
         }
