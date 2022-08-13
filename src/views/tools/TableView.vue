@@ -211,7 +211,7 @@
                 let text2 = this.tableData[index].secondText.replace(/<.*?>/g,'')
                 let fileText1 = ''
                 let fileText2 = ''
-                debugger
+                // debugger
                 for (let i = 0; i < this.bookList1.length; i++) {
                     if (this.bookList1[i].filename === filename1) {
                         fileText1 = this.bookList1[i].text
@@ -249,7 +249,7 @@
             this.highlightSetting = highlight.value
             //重置表格
             this.resList = JSON.parse(this.$route.query.table)
-            debugger
+            // debugger
             this.flag = this.$route.query.flag
             this.resetHighlight()
             if(typeof (this.$route.query.bookList2)!=="undefined"){

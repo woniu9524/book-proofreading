@@ -107,10 +107,8 @@ export default {
   methods: {
     searchWord(val) {
       let flag = 0;
-      debugger
       for (let index in this.textDict) {
         if (this.textDict[index].name === val) {
-          debugger
           if(typeof (this.activeNames)==="object"){
             this.activeNames=[parseInt(this.textDict[index].id)];
           }else{
@@ -130,7 +128,6 @@ export default {
       document.getElementById(this.textDict[0].name).scrollIntoView({block: "center", inline: "center"})
     },
     handleChange() {
-      debugger
       if (JSON.stringify(this.objLocation)==='{}'){
         this.textDict.forEach((obj,index)=>{
           this.objLocation[obj.id]=index;
@@ -144,9 +141,8 @@ export default {
       } else {
         indexes = this.activeNames;
       }
-      debugger
+
       indexes.forEach((i) => {
-        debugger
         let keyword=this.textDict[this.objLocation[i]].name;
         let lines=this.textDict[this.objLocation[i]].textList;
         // this.textDict.forEach((obj)=>{
@@ -183,7 +179,6 @@ export default {
         })
         excelData.push(tempList)
       })
-      debugger
       ipc.send('saveDictExcel', JSON.stringify(excelData))
     },
     getTextView(evt) {
@@ -205,7 +200,6 @@ export default {
         y.push(b.initial[0]===undefined?1000:b.initial[0].charCodeAt());
         y.push(b.initial[1]===undefined?1000:b.initial[1].charCodeAt());
         if(x[0]<97||x[0]>122){
-          debugger
           x[0]=1000;
         }
         if(y[0]<97||y[0]>122){
@@ -218,7 +212,6 @@ export default {
         }
 
       })
-      debugger
       this.objLocation={}
       this.textDict.forEach((obj,index)=>{
         this.objLocation[obj.id]=index;
@@ -263,7 +256,6 @@ export default {
     numPositiveOrder(){
       if (this.textDictCopy.length === 0) {
         this.textDictCopy = JSON.parse(JSON.stringify(this.textDict))
-        debugger
       }
       this.textDict.sort((a,b)=>{
         return a.textList.length-b.textList.length;

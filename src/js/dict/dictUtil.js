@@ -82,7 +82,7 @@ export const makeInvertedIndex = (removedChars, splitSigns, filterWords, minLeng
     let wordDic = makeDict(removedChars, filterWords, textList);
     //将filterWords变成列表，分隔符就用||
     let filterList = filterWords.split('||');
-    debugger
+    // debugger
     textList.forEach((line) => {
         let originLine=line;
         filterList.forEach((reg) => {
@@ -244,14 +244,16 @@ export const makeKeywordDict = (settingForm, text, keyword) => {
     let keywordList = keyword.split('\n');
     let keywordSplit = settingForm.keywordSplitInput + ' ';
     let keywordSplitSigns = keywordSplit.split('');
+
     keywordSplitSigns.forEach((sign) => {
         let tempList = []
         keywordList.forEach((keyword) => {
-            tempList = tempList.concat(keyword.split(' '));
+            tempList = tempList.concat(keyword.split(sign));
         })
         keywordList = tempList;
         tempList = [];
     })
+
     //text分句
     let textList = splitBySigns(settingForm.splitInput, text);
     //整合

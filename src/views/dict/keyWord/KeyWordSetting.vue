@@ -87,7 +87,7 @@ export default {
       let keywordSplit=db.__wrapped__.textDict.keywordSplit
       let textSplit=db.__wrapped__.textDict.textSplit
       let minLength=db.__wrapped__.textDict.minLength
-      debugger
+      // debugger
       if(keywordSplit!=="undefined"&&keywordSplit.length>0){
         this.settingForm.keywordSplitInput=keywordSplit;
       }

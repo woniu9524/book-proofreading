@@ -154,7 +154,7 @@ export default {
         let textSplit=db.__wrapped__.textDict.textSplit
         let minLength=db.__wrapped__.textDict.minLength
         let removed=db.__wrapped__.textDict.removed
-        debugger
+        // debugger
         if(filter!=="undefined"&&filter.length>0){
           this.settingForm.filterInput=filter;
         }

@@ -32,7 +32,6 @@
                 return html
             },
             searchText(keyword) {
-                debugger
                 if (window.find && window.getSelection) {
                     document.designMode = "on";
                     let sel = window.getSelection();

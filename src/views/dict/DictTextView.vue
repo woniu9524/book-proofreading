@@ -41,7 +41,7 @@ export default {
 
   },
   mounted(){
-    debugger
+    // debugger
     this.dictText=localStorage.getItem('dictText')
     this.keyLine=localStorage.getItem("keyLine")
     this.fileText=this.toHtml(this.dictText,this.keyLine,'key1')

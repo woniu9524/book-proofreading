@@ -21,6 +21,6 @@
     "textSplit": "[。”]，。；？：",
     "minLength": 0,
     "removed": "1234567890.《》、。。？，“”〈〉（）/",
-    "keywordSplit": ""
+    "keywordSplit": "，"
   }
 }
