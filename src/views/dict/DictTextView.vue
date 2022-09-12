@@ -22,7 +22,8 @@ export default {
       text.split('\n').forEach((text)=>{
         html+='<p>'+text+'</p>'
       })
-      html=html.replace(keyword,'<span id="'+name+'" class="highlight-text">'+keyword+'</span>')
+      console.log(eval("/" + keyword.replace(/\[/g,'\\[')+"/g"))
+      html=html.replace(eval("/" + keyword.replace(/\[/g,'\\[')+"/g"),'<span id="'+name+'" class="highlight-text">'+keyword+'</span>')
       return html
     },
     searchText(keyword) {
@@ -41,9 +42,12 @@ export default {
 
   },
   mounted(){
-    // debugger
+    debugger
     this.dictText=localStorage.getItem('dictText')
+    // this.dictText=this.dictText.replace(/\[/g,'')
+    // this.dictText=this.dictText.replace(/]/g,'')
     this.keyLine=localStorage.getItem("keyLine")
+    console.log(this.keyLine)
     this.fileText=this.toHtml(this.dictText,this.keyLine,'key1')
     this.$nextTick(() => {
       document.getElementById('key1').scrollIntoView({block:"center",inline:"center"})

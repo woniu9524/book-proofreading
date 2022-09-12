@@ -9,6 +9,7 @@
   </el-tabs>-->
   <dict-collapse
       :text-dict.sync="textDict"
+      @reSetting="reSetting"
   />
 </template>
 
@@ -34,6 +35,14 @@ export default {
         minLength:0,
       }
     }
+  },
+  methods:{
+    reSetting(settingForm){
+      this.settingForm=JSON.parse(settingForm)
+      let text=this.$route.query.text;
+      let keyword=this.$route.query.keyword;
+      this.textDict=makeKeywordDict(this.settingForm,text,keyword);
+    },
   },
   mounted() {
     this.settingForm = JSON.parse(this.$route.query.settingForm);

@@ -24,6 +24,9 @@
   <div style="text-align: center;margin-top: 10px;">
     <el-button type="primary" round size="large" :disabled="!nextCanBeClick" @click="goNext">&emsp;&emsp;&emsp;下 一 步&emsp;&emsp;&emsp;</el-button>
   </div>
+  <div style="text-align: center;">
+    <a href="javascript:void(0)" @click="useHistory">使用上一次内容</a>
+  </div>
   <el-form
       label-width="100px"
       :model="settingForm"
@@ -93,6 +96,7 @@ export default {
               dictText['filepath'] = filepath;
               dictText['text'] = fileString;
               localStorage.setItem("dictText", fileString);
+              localStorage.setItem("filepath",filepath);
               profileStore.dictText.push(dictText)
               ElNotification({
                 title: 'Success',
@@ -114,6 +118,7 @@ export default {
           fileString=fileString.replace(/\[/g,'');
           fileString=fileString.replace(/]/g,'');
           localStorage.setItem("dictText", fileString);
+          localStorage.setItem("filepath",filepath);
           profileStore.dictText.push(dictText)
           ElNotification({
             title: 'Success',
@@ -146,6 +151,14 @@ export default {
         path: '/dict/allWordShow',
         query: {'settingForm': JSON.stringify(this.settingForm)}
       })
+    },
+    useHistory(){
+      if (localStorage.getItem("dictText")!==null){
+        this.goNext()
+      }else {
+        alert("没有之前的记录")
+      }
+
     },
     readConfig(){
       try {

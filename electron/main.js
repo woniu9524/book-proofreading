@@ -155,6 +155,22 @@ ipc.on('saveExcel', function (event, args) {
 
 })
 
+ipc.on('saveDictText', function (event,args) {
+    dialog.showSaveDialog({
+        title: '保存文件',
+    }).then(result => {
+        let path = result.filePath
+        if (path.length<=4||path.slice(path.length - 4, path.length) !== '.txt') {
+            path += '.txt'
+        }
+        fs.writeFileSync(result.filePath + '.txt', args)
+        event.reply("saveEnd");
+    }).catch(err => {
+        console.log(err)
+    })
+
+})
+
 const xlsx = require('node-xlsx');
 const writeExcel = (data, filepath, header = ['文件名', '原文本', '文件名', '比较文本', '相似度']) => {
     let excelList = []

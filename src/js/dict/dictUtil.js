@@ -4,6 +4,7 @@ import {pinyin} from "pinyin-pro";
 export const removeWords = (removeWords, texts) => {
     removeWords = removeWords + ' \r';
     let removeList = removeWords.split("");
+
     removeList.forEach((ch) => {
         let newTexts = "";
         for (let i = 0; i < texts.length; i++) {
@@ -14,26 +15,31 @@ export const removeWords = (removeWords, texts) => {
         }
         texts = newTexts;
     })
+
     return texts;
 }
 //按照符号断句
 export const splitBySigns = (splitSigns, texts) => {
-    texts=texts.replace(/？）/g,"asdfghj");
+    texts = texts.replace(/？）/g, "asdfghj");
     let textList = texts.split('\n');
     //两个的，优先级高[]括起来
-    let exp=/\[.*?]/g;
+    let exp = /\[.*?]/g;
     let result;
-    let high_sign=[]
-    while ((result=exp.exec(splitSigns))!=null){
+    let high_sign = []
+    while ((result = exp.exec(splitSigns)) != null) {
         high_sign.push(result);
     }
-    splitSigns=splitSigns.replace(/\[.*?]/g,'')
-    high_sign.forEach((sign)=>{
-
+    splitSigns = splitSigns.replace(/\[.*?]/g, '')
+    high_sign.forEach((sign, index) => {
+        high_sign[index] = sign[0].replace(/\[/g, '').replace(/]/g, '')
     })
+    high_sign = high_sign.reverse()
     let tempList = [];
-    let splitSignList=splitSigns.split('')
-    splitSignList=splitSignList.concat(high_sign)
+    let splitSignList = splitSigns.split('')
+    high_sign.forEach((sign) => {
+        splitSignList.unshift(sign)
+    })
+    // debugger
     for (let i = 0; i < splitSignList.length; i++) {
         let sign = splitSignList[i];
         textList.forEach((text) => {
@@ -42,8 +48,8 @@ export const splitBySigns = (splitSigns, texts) => {
         textList = tempList;
         tempList = [];
     }
-    textList.forEach((line,index,array)=>{
-        textList[index]=line.replace(/asdfghj/g,'？）');
+    textList.forEach((line, index, array) => {
+        textList[index] = line.replace(/asdfghj/g, '？）');
     })
     return textList;
 }
@@ -60,15 +66,15 @@ export const makeDict = (removedChars, filterWords, textList) => {
         line = removeWords(removedChars, line);
         for (let i = 0; i < line.length; i++) {
             //一个字分成两部分的情况
-            if (line.charAt(i)==='['){
+            if (line.charAt(i) === '[') {
                 i++;
-                let temp_word=""
-                while (line.charAt(i)!==']'){
-                    temp_word+=line.charAt(i);
+                let temp_word = ""
+                while (line.charAt(i) !== ']') {
+                    temp_word += line.charAt(i);
                     i++;
                 }
                 wordDic[temp_word] = [];
-            }else {
+            } else {
                 wordDic[line.charAt(i)] = [];
             }
 
@@ -78,52 +84,123 @@ export const makeDict = (removedChars, filterWords, textList) => {
 }
 
 export const makeInvertedIndex = (removedChars, splitSigns, filterWords, minLength, texts) => {
-    let textList = splitBySigns(splitSigns, texts);
-    let wordDic = makeDict(removedChars, filterWords, textList);
-    //将filterWords变成列表，分隔符就用||
-    let filterList = filterWords.split('||');
-    // debugger
-    textList.forEach((line) => {
-        let originLine=line;
-        filterList.forEach((reg) => {
-            line = line.replace(eval("/" + reg + "/ig"), '');
-        })
-        line = removeWords(removedChars, line);
-        if (line.length >= minLength) {
-            for (let i = 0; i < line.length; i++) {
-                let word;
-                if (line.charAt(i)==='['){
-                    i++;
-                    let temp_word=""
-                    while (line.charAt(i)!==']'){
-                        temp_word+=line.charAt(i);
-                        i++;
-                    }
-                    word=temp_word;
-                }else {
-                    word= line.charAt(i);
-                }
-                if (word in wordDic) {
-                    originLine=originLine.replace(/\[/g,'')
-                    originLine=originLine.replace(/]/g,'')
-                    wordDic[word].push(originLine);
-                }
-            }
+    //把文本分成篇章
+    let lines = texts.split("\n");
+    let textDic = {}
+    let title = ''
+    lines.forEach((line) => {
+        if (line.match(/《.*?》/) != null && line.match(/《.*?》/)['index'] === 0 && line.replace(/《.*?》/, '').length < 3) {
+            title = line.match(/《.*?》/)[0]
+            textDic[title] = ''
+        } else {
+            textDic[title] += line
         }
     })
 
     let dictList = [];
-    let count = 0;
-    for (let key in wordDic) {
-        count++;
-        dictList.push({
-            id: count,
-            name: key,
-            initial:pinyin(key, { toneType: 'none', type: 'array' })[0],
-            textList: [...new Set(wordDic[key])]
+    for (let bookName in textDic) {
+        let oneBook = textDic[bookName]
+
+        let textList = splitBySigns(splitSigns, oneBook);
+        let wordDic = makeDict(removedChars, filterWords, textList);
+        //将filterWords变成列表，分隔符就用||
+        let filterList = filterWords.split('||');
+        // debugger
+        textList.forEach((line) => {
+            let originLine = line;
+            filterList.forEach((reg) => {
+                line = line.replace(eval("/" + reg + "/ig"), '');
+            })
+            line = removeWords(removedChars, line);
+            if (line.length >= minLength) {
+                let has_in_word = []
+                for (let i = 0; i < line.length; i++) {
+                    let word;
+                    if (line.charAt(i) === '[') {
+                        i++;
+                        let temp_word = ""
+                        while (line.charAt(i) !== ']') {
+                            temp_word += line.charAt(i);
+                            i++;
+                        }
+                        word = temp_word;
+                    } else {
+                        word = line.charAt(i);
+                    }
+                    if ((word in wordDic) && !has_in_word.includes(word)) {
+                        // debugger
+                        // originLine=originLine.replace(/\[/g,'')
+                        // originLine=originLine.replace(/]/g,'')
+                        wordDic[word].push(originLine);
+                        has_in_word.push(word)
+                    }
+                }
+            }
         })
+
+        function frequencies(/* {Array} */ a) {
+            return new Map([...new Set(a)].map(
+                x => [[x, {isClicked: false}], a.filter(y => y === x).length]
+            ));
+        }
+
+        for (let key in wordDic) {
+            // debugger
+            let tempList = []
+            frequencies(wordDic[key]).forEach(function (value, key) {
+                tempList.push([value, key])
+            })
+            wordDic[key] = tempList
+        }
+        // debugger
+        let count = 0;
+        for (let key in wordDic) {
+            count++;
+
+            dictList.push({
+                id: count,
+                name: key,
+                title: bookName,
+                initial: pinyin(key, {toneType: 'none', type: 'array'})[0],
+                textList: wordDic[key]
+            })
+        }
     }
-    //console.log(dictList)
+    //合并多本书
+    let wordSet = new Set();
+    let newDict = new Map()
+    dictList.forEach((obj) => {
+        if (newDict.get(obj.name) !== undefined) {
+            let tempList = []
+            obj.textList.forEach((v, k) => {
+                tempList.push({
+                    word: obj.name,
+                    title: obj.title,
+                    initial: obj.initial,
+                    nums: v,
+                    text: k,
+                    isClicked: false
+                })
+            })
+            newDict.set(obj.name, newDict.get(obj.name).concat(tempList))
+
+        } else {
+            //重新整理格式
+            let tempList = []
+            obj.textList.forEach((v, k) => {
+                tempList.push({
+                    word: obj.name,
+                    title: obj.title,
+                    initial: obj.initial,
+                    nums: v,
+                    text: k,
+                    isClicked: false
+                })
+            })
+            newDict.set(obj.name, tempList)
+        }
+    })
+    debugger
     return dictList;
 }
 
@@ -253,29 +330,62 @@ export const makeKeywordDict = (settingForm, text, keyword) => {
         keywordList = tempList;
         tempList = [];
     })
+    keywordList = [...new Set(keywordList)];
 
-    //text分句
-    let textList = splitBySigns(settingForm.splitInput, text);
-    //整合
-    let resList = [];
-    let count = 0;
-    keywordList=[...new Set(keywordList)];
-    keywordList.forEach((keyword) => {
-        count++;
-        let tempTextList = []
-        textList.forEach((line) => {
-            if (line.indexOf(keyword) >= 0) {
-                tempTextList.push(line);
-            }
-        })
-        if (tempTextList.length > 0) {
-            resList.push({
-                id: count,
-                name: keyword,
-                initial:pinyin(keyword, { toneType: 'none', type: 'array' })[0],
-                textList: [...new Set(tempTextList)]
-            })
+    //把文本分成篇章
+    let lines = text.split("\n");
+    let textDic = {}
+    let title = ''
+    lines.forEach((line) => {
+        if (line.match(/《.*?》/) != null && line.match(/《.*?》/)['index'] === 0 && line.replace(/《.*?》/, '').length < 3) {
+            title = line.match(/《.*?》/)[0]
+            textDic[title] = ''
+        } else {
+            textDic[title] += line
         }
     })
+
+    function frequencies(/* {Array} */ a) {
+        return new Map([...new Set(a)].map(
+            x => [[x, {isClicked: false}], a.filter(y => y === x).length]
+        ));
+    }
+
+    let resList = [];
+    for (let bookName in textDic) {
+        let oneBook = textDic[bookName]
+
+        //text分句
+        let textList = splitBySigns(settingForm.splitInput, oneBook);
+        //整合
+        let count = 0;
+        keywordList.forEach((keyword) => {
+            count++;
+            let tempTextList = []
+            textList.forEach((line) => {
+                if (line.indexOf(keyword) >= 0) {
+                    tempTextList.push(line);
+                }
+            })
+            if (tempTextList.length > 0) {
+
+                let tempList = []
+                frequencies(tempTextList).forEach(function (value, key) {
+                    tempList.push([value, key])
+                })
+
+                resList.push({
+                    id: count,
+                    title: bookName,
+                    name: keyword,
+                    initial: pinyin(keyword, {toneType: 'none', type: 'array'})[0],
+                    textList: tempList
+                })
+            }
+        })
+
+    }
+
+
     return resList;
 }
