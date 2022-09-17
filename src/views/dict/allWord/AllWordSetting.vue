@@ -96,6 +96,7 @@ export default {
               dictText['filepath'] = filepath;
               dictText['text'] = fileString;
               localStorage.setItem("dictText", fileString);
+              localStorage.setItem("dictTextCopy", fileString);
               localStorage.setItem("filepath",filepath);
               profileStore.dictText.push(dictText)
               ElNotification({
@@ -115,9 +116,10 @@ export default {
           dictText['filename'] = filename;
           dictText['filepath'] = filepath;
           dictText['text'] = fileString;
-          fileString=fileString.replace(/\[/g,'');
-          fileString=fileString.replace(/]/g,'');
+          // fileString=fileString.replace(/\[/g,'');
+          // fileString=fileString.replace(/]/g,'');
           localStorage.setItem("dictText", fileString);
+          localStorage.setItem("dictTextCopy", fileString);
           localStorage.setItem("filepath",filepath);
           profileStore.dictText.push(dictText)
           ElNotification({
@@ -153,7 +155,9 @@ export default {
       })
     },
     useHistory(){
-      if (localStorage.getItem("dictText")!==null){
+
+      if (localStorage.getItem("dictTextCopy")!==null){
+        localStorage.setItem("dictText",localStorage.getItem("dictTextCopy"))
         this.goNext()
       }else {
         alert("没有之前的记录")

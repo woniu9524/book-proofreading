@@ -20,13 +20,13 @@
               <div class="line-component dict-line" v-for="(arr,ind) in item.textList">
                 <el-row :gutter="5">
                   <el-col :span="3" class="book-name">
-                    <p style="text-align: center">{{ item.title }}</p>
+                    <p style="text-align: center">{{ arr[2] }}</p>
                   </el-col>
                   <el-col :span="1" class="line-num">
                     <p>{{ arr[0] }}</p>
                   </el-col>
 
-                  <el-col :span="20" class="line-text" @dblclick="arr[1][1].isClicked=!arr[1][1].isClicked;dblclick(arr[1][1].isClicked,arr)" >
+                  <el-col :span="20" class="line-text" @dblclick="arr[1][1].isClicked=!arr[1][1].isClicked;dblclick(arr[1][1].isClicked,arr,item.name)" >
                     <el-input
                         v-if="arr[1][1].isClicked"
                         v-model="textChangeInput"
@@ -43,12 +43,12 @@
               <div class="line-component dict-line" v-for="(arr,ind) in item.textList">
                 <el-row :gutter="5">
                   <el-col :span="3" class="book-name">
-                    <p style="text-align: center">{{ item.title }}</p>
+                    <p style="text-align: center">{{ arr[2] }}</p>
                   </el-col>
                   <el-col :span="1" class="line-num">
                     <p>{{ arr[0] }}</p>
                   </el-col>
-                  <el-col :span="20" class="line-text" @dblclick="arr[1][1].isClicked=!arr[1][1].isClicked;dblclick(arr[1][1].isClicked,arr)" >
+                  <el-col :span="20" class="line-text" @dblclick="arr[1][1].isClicked=!arr[1][1].isClicked;dblclick(arr[1][1].isClicked,arr,item.name)" >
                     <el-input
                         v-if="arr[1][1].isClicked"
                         v-model="textChangeInput"
@@ -231,12 +231,15 @@ export default {
       document.getElementById(this.textDict[0].name).scrollIntoView({block: "center", inline: "center"})
     },
     handleChange() {
+
       if (JSON.stringify(this.objLocation) === '{}') {
         this.textDict.forEach((obj, index) => {
           this.objLocation[obj.id] = index;
+          console.log(this.objLocation)
         })
         console.log(this.objLocation)
       }
+
       //手风琴模式和正常模式不一样，一个是string一个是array
       let indexes = [];
       if (typeof (this.activeNames) === "number") {
@@ -246,6 +249,7 @@ export default {
       }
 
       indexes.forEach((i) => {
+        debugger
         let keyword = this.textDict[this.objLocation[i]].name;
         let lines = this.textDict[this.objLocation[i]].textList;
         // this.textDict.forEach((obj)=>{
@@ -275,20 +279,21 @@ export default {
 
         let flag=true;
 
-        obj.textList.forEach((value,key) => {
+        obj.textList.forEach((lst) => {
           let tempList = []
+          let wordName=obj.name.length>1?"["+obj.name+"]":obj.name
           if (flag){
             tempList.push(obj.name)
-            tempList.push(obj.title)
-            tempList.push(value)
-            tempList.push(key[0])
+            tempList.push(lst[2])
+            tempList.push(lst[0])
+            tempList.push(lst[1][0].replace(/<span class="highlight-text">.*?<\/span>/g,wordName))
             excelData.push(tempList)
             flag=false
           }else {
             tempList.push('')
-            tempList.push(obj.title)
-            tempList.push(value)
-            tempList.push(key[0])
+            tempList.push(lst[2])
+            tempList.push(lst[0])
+            tempList.push(lst[1][0].replace(/<span class="highlight-text">.*?<\/span>/g,wordName))
             excelData.push(tempList)
           }
           // line.replace(.*?<\/span>/g, keyword)
@@ -444,8 +449,9 @@ export default {
       this.settingDialogShow = false
 
     },
-    dblclick(isClicked,arr){
+    dblclick(isClicked,arr,keyword){
       if (isClicked){
+        arr[1][0]=arr[1][0].replace(/<span class="highlight-text">.*?<\/span>/g, keyword)
         this.textChangeInput=arr[1][0];
       }else {
         if(this.textChangeInput!==arr[1][0]){
@@ -455,22 +461,20 @@ export default {
               let dictText=localStorage.getItem("dictText")
               dictText=dictText.replace(eval("/"+this.textChangeList[i][1].replace(/\[/g,"\\[")+"/g"),this.textChangeInput)
               localStorage.setItem("dictText",dictText)
-
               this.textChangeList[i][1]=this.textChangeInput
-              arr[1][0]=this.textChangeInput
-
+              debugger
+              arr[1][0]=this.textChangeInput.replace(eval("/" + keyword + "/g"), '<span class="highlight-text">' + keyword + '</span>')
               flag=false
             }
           }
           if (flag){
             this.textChangeList.push([arr[1][0],this.textChangeInput])
-
+            debugger
             let dictText=localStorage.getItem("dictText")
             console.log(eval("/"+arr[1][0].replace(/\[/g,"\\[")+"/g"))
             dictText=dictText.replace(eval("/"+arr[1][0].replace(/\[/g,"\\[")+"/g"),this.textChangeInput)
             localStorage.setItem("dictText",dictText)
-
-            arr[1][0]=this.textChangeInput
+            arr[1][0]=this.textChangeInput.replace(eval("/" + keyword + "/g"), '<span class="highlight-text">' + keyword + '</span>')
 
           }
         }

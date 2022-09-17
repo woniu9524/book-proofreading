@@ -66,8 +66,8 @@ export default {
   },
   methods: {
     goNext() {
-      this.text=this.text.replace(/\[/g,'')
-      this.text=this.text.replace(/]/g,'')
+      // this.text=this.text.replace(/\[/g,'')
+      // this.text=this.text.replace(/]/g,'')
       localStorage.setItem("dictText", this.text);
       db.set('textDict.keywordSplit',this.settingForm.keywordSplitInput).write()
       db.set('textDict.textSplit',this.settingForm.splitInput).write()

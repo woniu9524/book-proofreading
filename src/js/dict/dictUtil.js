@@ -200,8 +200,31 @@ export const makeInvertedIndex = (removedChars, splitSigns, filterWords, minLeng
             newDict.set(obj.name, tempList)
         }
     })
+
+    let count=0
+    let newDictList=[]
+    newDict.forEach((lineList,key)=>{
+        count++
+        if (lineList.length>0){
+            let newLineList=[]
+            lineList.forEach((line)=>{
+                newLineList.push([line.nums[0],line.nums[1],line.title])
+            })
+
+            newDictList.push({
+                id:count,
+                name:key,
+                initial:lineList[0].initial,
+                textList: newLineList
+
+            })
+        }
+    })
+
+
     debugger
-    return dictList;
+    // return dictList
+    return newDictList;
 }
 
 //生成组合
@@ -387,5 +410,61 @@ export const makeKeywordDict = (settingForm, text, keyword) => {
     }
 
 
-    return resList;
+    //合并多本书
+    let newDict = new Map()
+    resList.forEach((obj) => {
+        if (newDict.get(obj.name) !== undefined) {
+            let tempList = []
+            obj.textList.forEach((v, k) => {
+                tempList.push({
+                    word: obj.name,
+                    title: obj.title,
+                    initial: obj.initial,
+                    nums: v,
+                    text: k,
+                    isClicked: false
+                })
+            })
+            newDict.set(obj.name, newDict.get(obj.name).concat(tempList))
+
+        } else {
+            //重新整理格式
+            let tempList = []
+            obj.textList.forEach((v, k) => {
+                tempList.push({
+                    word: obj.name,
+                    title: obj.title,
+                    initial: obj.initial,
+                    nums: v,
+                    text: k,
+                    isClicked: false
+                })
+            })
+            newDict.set(obj.name, tempList)
+        }
+    })
+
+    let count=0
+    let newDictList=[]
+    newDict.forEach((lineList,key)=>{
+        count++
+        if (lineList.length>0){
+            let newLineList=[]
+            lineList.forEach((line)=>{
+                newLineList.push([line.nums[0],line.nums[1],line.title])
+            })
+
+            newDictList.push({
+                id:count,
+                name:key,
+                initial:lineList[0].initial,
+                textList: newLineList
+
+            })
+        }
+    })
+
+    return newDictList
+    // return resList;
 }
+
