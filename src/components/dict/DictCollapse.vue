@@ -249,8 +249,8 @@ export default {
       }
 
       indexes.forEach((i) => {
-        debugger
         let keyword = this.textDict[this.objLocation[i]].name;
+        keyword=keyword.replace(/\[/g,'').replace(/]/g,'')//修复keyword里点击出现很多的bug
         let lines = this.textDict[this.objLocation[i]].textList;
         // this.textDict.forEach((obj)=>{
         //   debugger
