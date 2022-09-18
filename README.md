@@ -104,14 +104,14 @@ https://www.yuque.com/woniu-avesf/tvyxhx/sg007f
 - 校对结果
 ![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1645126259169-5bbfd019-1211-4eaa-a9e2-f5d31d3f5bc9.png)
 - 预览界面
-![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1645126296137-66c36a23-80a4-428e-9d7d-7db85660e95b.png?x-oss-process=image%2Fresize%2Cw_937%2Climit_0)
+![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1645126296137-66c36a23-80a4-428e-9d7d-7db85660e95b.png)
 - 书架界面
 ![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1645126392048-8f17ac17-3ccc-4f40-9371-7161fbfe265e.png)
 - 阅读界面
-![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1645126445893-184f4392-e36e-455d-9c0c-bfca38f55fd0.png?x-oss-process=image%2Fresize%2Cw_937%2Climit_0)
+![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1645126445893-184f4392-e36e-455d-9c0c-bfca38f55fd0.png)
 - 书本比对界面
 ![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1663485268761-bba41c1b-25ef-41bd-8219-c0ed52eaaf2f.png)
 - 比对详情
-![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1663485305549-5d725a8f-f99a-4126-9296-6acf06acec21.png?x-oss-process=image%2Fresize%2Cw_937%2Climit_0)
+![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1663485305549-5d725a8f-f99a-4126-9296-6acf06acec21.png)
 - 文本辞典
 ![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1663485041330-f934ab96-6422-4cf8-abe6-637d2997ba08.png)
