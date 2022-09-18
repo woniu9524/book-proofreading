@@ -110,5 +110,8 @@ https://www.yuque.com/woniu-avesf/tvyxhx/sg007f
 - 阅读界面
 ![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1645126445893-184f4392-e36e-455d-9c0c-bfca38f55fd0.png?x-oss-process=image%2Fresize%2Cw_937%2Climit_0)
 - 书本比对界面
-![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1645126501655-d8fc0331-e5fc-4b3f-8741-8ff9971b7797.png?x-oss-process=image%2Fresize%2Cw_937%2Climit_0)
-
+![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1663485268761-bba41c1b-25ef-41bd-8219-c0ed52eaaf2f.png)
+- 比对详情
+![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1663485305549-5d725a8f-f99a-4126-9296-6acf06acec21.png?x-oss-process=image%2Fresize%2Cw_937%2Climit_0)
+- 文本辞典
+![image.png](https://cdn.nlark.com/yuque/0/2022/png/22403152/1663485041330-f934ab96-6422-4cf8-abe6-637d2997ba08.png)
