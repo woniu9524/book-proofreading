@@ -22,9 +22,14 @@ export default {
       text.split('\n').forEach((text)=>{
         html+='<p>'+text+'</p>'
       })
+      debugger
       console.log(eval("/" + keyword.replace(/\[/g,'\\[')+"/g"))
-      html=html.replace(eval("/" + keyword.replace(/\[/g,'\\[')+"/g"),'<span id="'+name+'" class="highlight-text">'+keyword+'</span>')
+      let reg=new RegExp(eval("/" + keyword.replace(/\[/g,'\\[')+"/g"))
+      console.log(reg.test(text))
+      html=html.replace(eval("/" + keyword.replace(/\[/g,'\\[')+"/g"),'<span id="'+name+'" class="highlight-text">'+keyword.replace(/\\\//g,'\/')+'</span>')
+
       return html
+
     },
     searchText(keyword) {
       if (window.find && window.getSelection) {
@@ -44,14 +49,53 @@ export default {
   mounted(){
     debugger
     this.dictText=localStorage.getItem('dictText')
+
+    // 修改() []的格式
+    let strList1 = this.dictText.match(/\[.*?]/g);
+    debugger
+    if (strList1 !== null) {
+      strList1=[...new Set(strList1)]
+      strList1.forEach((str) => {
+        this.dictText = this.dictText.replace(str, '<span class="long-word">' + str + '</span>')
+
+      })
+    }
+    debugger
+
+    let strList2 = this.dictText.match(/（.*?）/g);
+    if (strList2 !== null) {
+      strList2=[...new Set(strList2)]
+      strList2.forEach((str) => {
+        this.dictText = this.dictText.replace(str, '<span class="like-word">' + str + '</span>')
+      })
+    }
     // this.dictText=this.dictText.replace(/\[/g,'')
     // this.dictText=this.dictText.replace(/]/g,'')
     this.keyLine=localStorage.getItem("keyLine")
+    // 修改() []的格式
+    strList1 = this.keyLine.match(/\[.*?]/g);
+    debugger
+    if (strList1 !== null) {
+      strList1=[...new Set(strList1)]
+      strList1.forEach((str) => {
+        this.keyLine = this.keyLine.replace(str, '<span class="long-word">' + str + '<\\/span>')
+      })
+    }
+
+    strList2 = this.keyLine.match(/（.*?）/g);
+    if (strList2 !== null) {
+      strList2=[...new Set(strList2)]
+      strList2.forEach((str) => {
+        this.keyLine = this.keyLine.replace(str, '<span class="like-word">' + str + '<\\/span>')
+      })
+    }
     console.log(this.keyLine)
     this.fileText=this.toHtml(this.dictText,this.keyLine,'key1')
     this.$nextTick(() => {
       document.getElementById('key1').scrollIntoView({block:"center",inline:"center"})
     });
+    const that=this;
+
 
   }
 }
@@ -86,4 +130,11 @@ export default {
   border: 1px solid #ef6063;
 }
 
+>>> .long-word {
+  color: #ff00ff;
+}
+
+>>> .like-word {
+  color: #00AD77;
+}
 </style>

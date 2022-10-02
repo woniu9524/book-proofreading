@@ -26,7 +26,8 @@
                     <p>{{ arr[0] }}</p>
                   </el-col>
 
-                  <el-col :span="20" class="line-text" @dblclick="arr[1][1].isClicked=!arr[1][1].isClicked;dblclick(arr[1][1].isClicked,arr,item.name)" >
+                  <el-col :span="20" class="line-text"
+                          @dblclick="arr[1][1].isClicked=!arr[1][1].isClicked;dblclick(arr[1][1].isClicked,arr,item.name)">
                     <el-input
                         v-if="arr[1][1].isClicked"
                         v-model="textChangeInput"
@@ -34,7 +35,8 @@
                         type="textarea"
                         style="text-align: center">
                     </el-input>
-                    <p v-else v-html="arr[1][0]" :name="arr[1][0]" @click="getTextView" style="color: #3a8ee6;cursor:pointer;"></p>
+                    <p v-else v-html="arr[1][0]" :name="arr[1][0]" @click="getTextView"
+                       style="color: #3a8ee6;cursor:pointer;"></p>
                   </el-col>
                 </el-row>
               </div>
@@ -48,7 +50,8 @@
                   <el-col :span="1" class="line-num">
                     <p>{{ arr[0] }}</p>
                   </el-col>
-                  <el-col :span="20" class="line-text" @dblclick="arr[1][1].isClicked=!arr[1][1].isClicked;dblclick(arr[1][1].isClicked,arr,item.name)" >
+                  <el-col :span="20" class="line-text"
+                          @dblclick="arr[1][1].isClicked=!arr[1][1].isClicked;dblclick(arr[1][1].isClicked,arr,item.name)">
                     <el-input
                         v-if="arr[1][1].isClicked"
                         v-model="textChangeInput"
@@ -204,7 +207,7 @@ export default {
         removedInput: '',
       },
       textChangeInput: '',
-      textChangeList:[],
+      textChangeList: [],
     }
   },
   methods: {
@@ -235,9 +238,9 @@ export default {
       if (JSON.stringify(this.objLocation) === '{}') {
         this.textDict.forEach((obj, index) => {
           this.objLocation[obj.id] = index;
-          console.log(this.objLocation)
+          //console.log(this.objLocation)
         })
-        console.log(this.objLocation)
+        //console.log(this.objLocation)
       }
 
       //手风琴模式和正常模式不一样，一个是string一个是array
@@ -250,7 +253,7 @@ export default {
 
       indexes.forEach((i) => {
         let keyword = this.textDict[this.objLocation[i]].name;
-        keyword=keyword.replace(/\[/g,'').replace(/]/g,'')//修复keyword里点击出现很多的bug
+        keyword = keyword.replace(/\[/g, '').replace(/]/g, '')//修复keyword里点击出现很多的bug
         let lines = this.textDict[this.objLocation[i]].textList;
         // this.textDict.forEach((obj)=>{
         //   debugger
@@ -262,8 +265,30 @@ export default {
         // })
 
         //去除样式
-        lines.forEach((line,index)=>{
+        lines.forEach((line, index) => {
           lines[index][1][0] = line[1][0].replace(/<span class="highlight-text">.*?<\/span>/g, keyword)
+          //去除 [] ()
+          let strList1 = line[1][0].match(/<span class="long-word">.*?<\/span>/g);
+          debugger
+          if (strList1 !== null) {
+            strList1=[...new Set(strList1)]
+            strList1.forEach((str) => {
+              let sliceStr = str.slice(24, -7);
+              //console.log(sliceStr)
+              lines[index][1][0] = line[1][0].replace(str, sliceStr);
+            })
+          }
+
+          let strList2 = line[1][0].match(/<span class="like-word">.*?<\/span>/g);
+          if (strList2 !== null) {
+            strList2=[...new Set(strList2)]
+            strList2.forEach((str) => {
+              let sliceStr = str.slice(24, -7);
+              //console.log(sliceStr)
+              lines[index][1][0] = line[1][0].replace(str, sliceStr);
+            })
+          }
+
         })
         //文本高亮
         if (this.isHighLight === true) {
@@ -271,29 +296,67 @@ export default {
             lines[index][1][0] = line[1][0].replace(eval("/" + keyword + "/g"), '<span class="highlight-text">' + keyword + '</span>')
           })
         }
+        // 修改() []的格式
+        lines.forEach((line, index) => {
+          let strList1 = line[1][0].match(/\[.*?]/g);
+          if (strList1 !== null) {
+            strList1=[...new Set(strList1)]
+            strList1.forEach((str) => {
+              line[1][0] = line[1][0].replace(str, '<span class="long-word">' + str + '</span>')
+            })
+
+          }
+          let strList2 = line[1][0].match(/（.*?）/g);
+          if (strList2 !== null) {
+            strList2=[...new Set(strList2)]
+            strList2.forEach((str) => {
+              line[1][0] = line[1][0].replace(str, '<span class="like-word">' + str + '</span>')
+            })
+
+          }
+        })
       })
     },
     outExcel() {
       let excelData = []
       this.textDict.forEach((obj) => {
 
-        let flag=true;
+        let flag = true;
 
         obj.textList.forEach((lst) => {
           let tempList = []
-          let wordName=obj.name.length>1?"["+obj.name+"]":obj.name
-          if (flag){
+          let wordName = obj.name.length > 1 ? "[" + obj.name + "]" : obj.name
+          if (flag) {
             tempList.push(obj.name)
             tempList.push(lst[2])
             tempList.push(lst[0])
-            tempList.push(lst[1][0].replace(/<span class="highlight-text">.*?<\/span>/g,wordName))
+            //去除 [] ()
+            let strList1 = lst[1][0].match(/<span class="long-word">.*?<\/span>/g);
+            debugger
+            if (strList1 !== null) {
+              strList1=[...new Set(strList1)]
+              strList1.forEach((str) => {
+                let sliceStr = str.slice(24, -7);
+                lst[1][0] = lst[1][0].replace(str, sliceStr);
+              })
+            }
+
+            let strList2 = lst[1][0].match(/<span class="like-word">.*?<\/span>/g);
+            if (strList2 !== null) {
+              strList2=[...new Set(strList2)]
+              strList2.forEach((str) => {
+                let sliceStr = str.slice(24, -7);
+                lst[1][0] = lst[1][0].replace(str, sliceStr);
+              })
+            }
+            tempList.push(lst[1][0].replace(/<span class="highlight-text">.*?<\/span>/g, wordName))
             excelData.push(tempList)
-            flag=false
-          }else {
+            flag = false
+          } else {
             tempList.push('')
             tempList.push(lst[2])
             tempList.push(lst[0])
-            tempList.push(lst[1][0].replace(/<span class="highlight-text">.*?<\/span>/g,wordName))
+            tempList.push(lst[1][0].replace(/<span class="highlight-text">.*?<\/span>/g, wordName))
             excelData.push(tempList)
           }
           // line.replace(.*?<\/span>/g, keyword)
@@ -418,7 +481,7 @@ export default {
     },
     readConfig() {
       try {
-        console.dir(db.__wrapped__.textDict)
+        //console.dir(db.__wrapped__.textDict)
         let filter = db.__wrapped__.textDict.filter
         let textSplit = db.__wrapped__.textDict.textSplit
         let minLength = db.__wrapped__.textDict.minLength
@@ -449,48 +512,123 @@ export default {
       this.settingDialogShow = false
 
     },
-    dblclick(isClicked,arr,keyword){
-      if (isClicked){
-        arr[1][0]=arr[1][0].replace(/<span class="highlight-text">.*?<\/span>/g, keyword)
-        this.textChangeInput=arr[1][0];
-      }else {
-        if(this.textChangeInput!==arr[1][0]){
-          let flag=true
+    dblclick(isClicked, arr, keyword) {
+      if (isClicked) {
+        //去除 [] ()
+        let strList1 = arr[1][0].match(/<span class="long-word">.*?<\/span>/g);
+        debugger
+        if (strList1 !== null) {
+          strList1=[...new Set(strList1)]
+          strList1.forEach((str) => {
+            let sliceStr = str.slice(24, -7);
+            arr[1][0] = arr[1][0].replace(str, sliceStr);
+          })
+        }
+
+        let strList2 = arr[1][0].match(/<span class="like-word">.*?<\/span>/g);
+        if (strList2 !== null) {
+          strList2=[...new Set(strList2)]
+          strList2.forEach((str) => {
+            let sliceStr = str.slice(24, -7);
+            // console.log(sliceStr)
+            arr[1][0] = arr[1][0].replace(str, sliceStr);
+          })
+        }
+        arr[1][0] = arr[1][0].replace(/<span class="highlight-text">.*?<\/span>/g, keyword)
+
+
+        this.textChangeInput = arr[1][0];
+      } else {
+        if (this.textChangeInput !== arr[1][0]) {
+          let flag = true
           for (let i = 0; i < this.textChangeList.length; i++) {
-            if (this.textChangeList[i][1]===arr[1][0]){
-              let dictText=localStorage.getItem("dictText")
-              dictText=dictText.replace(eval("/"+this.textChangeList[i][1].replace(/\[/g,"\\[")+"/g"),this.textChangeInput)
-              localStorage.setItem("dictText",dictText)
-              this.textChangeList[i][1]=this.textChangeInput
+            if (this.textChangeList[i][1] === arr[1][0]) {
               debugger
-              arr[1][0]=this.textChangeInput.replace(eval("/" + keyword + "/g"), '<span class="highlight-text">' + keyword + '</span>')
-              flag=false
+              let dictText = localStorage.getItem("dictText")
+              dictText = dictText.replace(eval("/" + this.textChangeList[i][1].replace(/\[/g, "\\[") + "/g"), this.textChangeInput)
+              localStorage.setItem("dictText", dictText)
+              this.textChangeList[i][1] = this.textChangeInput
+              debugger
+              arr[1][0] = this.textChangeInput.replace(eval("/" + keyword + "/g"), '<span class="highlight-text">' + keyword + '</span>')
+              // 修改() []的格式
+              let strList1 = arr[1][0].match(/\[.*?]/g);
+              if (strList1 !== null) {
+                strList1=[...new Set(strList1)]
+                strList1.forEach((str) => {
+                  arr[1][0] = arr[1][0].replace(str, '<span class="long-word">' + str + '</span>')
+                })
+              }
+
+              let strList2 = arr[1][0].match(/（.*?）/g);
+              if (strList2 !== null) {
+                strList2=[...new Set(strList2)]
+                strList2.forEach((str) => {
+                  arr[1][0] = arr[1][0].replace(str, '<span class="like-word">' + str + '</span>')
+                })
+              }
+              flag = false
             }
           }
-          if (flag){
-            this.textChangeList.push([arr[1][0],this.textChangeInput])
+          if (flag) {
+            this.textChangeList.push([arr[1][0], this.textChangeInput])
             debugger
-            let dictText=localStorage.getItem("dictText")
-            console.log(eval("/"+arr[1][0].replace(/\[/g,"\\[")+"/g"))
-            dictText=dictText.replace(eval("/"+arr[1][0].replace(/\[/g,"\\[")+"/g"),this.textChangeInput)
-            localStorage.setItem("dictText",dictText)
-            arr[1][0]=this.textChangeInput.replace(eval("/" + keyword + "/g"), '<span class="highlight-text">' + keyword + '</span>')
+            let dictText = localStorage.getItem("dictText")
+            //console.log(eval("/" + arr[1][0].replace(/\[/g, "\\[") + "/g"))
+            dictText = dictText.replace(eval("/" + arr[1][0].replace(/\[/g, "\\[") + "/g"), this.textChangeInput)
+            localStorage.setItem("dictText", dictText)
+            debugger
+            arr[1][0] = this.textChangeInput.replace(eval("/" + keyword + "/g"), '<span class="highlight-text">' + keyword + '</span>')
+            // 修改() []的格式
+            let strList1 = arr[1][0].match(/\[.*?]/g);
+            if (strList1 !== null) {
+              strList1=[...new Set(strList1)]
+              strList1.forEach((str) => {
+                arr[1][0] = arr[1][0].replace(str, '<span class="long-word">' + str + '</span>')
+              })
+            }
 
+            let strList2 = arr[1][0].match(/（.*?）/g);
+            if (strList2 !== null) {
+              strList2=[...new Set(strList2)]
+              strList2.forEach((str) => {
+                arr[1][0] = arr[1][0].replace(str, '<span class="like-word">' + str + '</span>')
+              })
+            }
+          }
+        }else {
+          arr[1][0]=this.textChangeInput.replace(eval("/" + keyword + "/g"), '<span class="highlight-text">' + keyword + '</span>')
+          // 修改() []的格式
+          let strList1 = arr[1][0].match(/\[.*?]/g);
+          if (strList1 !== null) {
+            strList1=[...new Set(strList1)]
+            strList1.forEach((str) => {
+              arr[1][0] = arr[1][0].replace(str, '<span class="long-word">' + str + '</span>')
+            })
+          }
+
+          let strList2 = arr[1][0].match(/（.*?）/g);
+          if (strList2 !== null) {
+            strList2=[...new Set(strList2)]
+            strList2.forEach((str) => {
+              arr[1][0] = arr[1][0].replace(str, '<span class="like-word">' + str + '</span>')
+            })
           }
         }
       }
-    },
+    }
+    ,
     //[]中的字替换
-    specialWordReplace(){
+    specialWordReplace() {
 
-    },
-    outDictText(){
+    }
+    ,
+    outDictText() {
       // const profileStore = useProfileStore() // 获取到store的实例
       // let text=profileStore.dictText[0].text
       // this.textChangeList.forEach((arr)=>{
       //   text=text.replace(eval("/"+arr[0]+"/g"),arr[1])
       // })
-      ipc.send('saveDictText',localStorage.getItem("dictText"))
+      ipc.send('saveDictText', localStorage.getItem("dictText"))
     }
 
   },
@@ -546,5 +684,13 @@ export default {
   padding-right: 3px;
   border-radius: 5px;
   border: 1px solid #ef6063;
+}
+
+>>> .long-word {
+  color: #ff00ff;
+}
+
+>>> .like-word {
+  color: #00AD77;
 }
 </style>
