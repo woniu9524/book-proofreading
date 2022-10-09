@@ -475,7 +475,7 @@ export const makeKeywordDict = (settingForm, text, keyword) => {
     // return resList;
 }
 
-export const kMeansForSentences=(textList,centerNum)=>{
+export const sortSentences=(textList)=>{
     // 生成数据
     let wordMap=new Map();
     let count=0
@@ -493,46 +493,56 @@ export const kMeansForSentences=(textList,centerNum)=>{
         numList.push(numLine);
     })
 
-    let centers = [];
-    for (let i = 0; i < centerNum; i++) {
-        centers.push(numList[i])
+    // 生成领接矩阵
+    let mat=new Array(numList.length);
+    for (let i = 0; i < mat.length; i++) {
+        mat[i]=new Array(numList.length);
+        for (let j = 0; j < mat[i].length; j++) {
+            if (i===j){
+                mat[i][j]=0;
+            }else {
+                mat[i][j]=-1;
+            }
+        }
     }
-    // debugger
-    let ans = kmeans(numList, centerNum, { initialization: centers });
-    // console.log(ans)
-    return ans.clusters;
+    // 计算余弦相似度
+    for (let i = 0; i < numList.length; i++) {
+        for (let j = i+1; j < numList.length; j++) {
+            mat[i][j]=Number(computeWordVectorSimilar(numList[i],numList[j]));
+        }
+    }
+
+    // 迪杰斯特拉找最大路径
+    let res=dijkstra(mat);
+    //返回顺序
+    return res;
+
 }
 
 export const clustering=(textList,centerNum,name)=>{
-    let lineList=[]
-    let minlength=99999;
-    textList.forEach((line)=>{
-        if (line[1][0].length<minlength){
-            minlength=line[1][0].length;
-        }
-    })
-    textList.forEach((line)=>{
-        lineList.push(sliceLine(line[1][0],name,minlength))
-    })
-
-    if (lineList.length>centerNum){
-        let clusters=kMeansForSentences(lineList,centerNum)
-        if (clusters.length===textList.length){
-            let tempList=[]
-            for (let i = 0; i < centerNum; i++) {
-                textList.forEach((line,index)=>{
-                    if (clusters[index]===i){
-                        tempList.push(line);
-                    }
-                })
+    try{
+        let lineList=[]
+        let minlength=99999;
+        textList.forEach((line)=>{
+            if (line[1][0].length<minlength){
+                minlength=line[1][0].length;
             }
-            return tempList;
-        }else{
-            return textList;
+        })
+        textList.forEach((line)=>{
+            lineList.push(sliceLine(line[1][0],name,minlength))
+        })
+        let sortList=sortSentences(lineList)
+        // 将原来列表顺序换成sortList的顺序
+        let newTextList=new Array(textList.length);
+        for (let i = 0; i < sortList.length; i++) {
+            newTextList[sortList[i]]=textList[i]
         }
-    }else {
+        return newTextList;
+    }catch (e){
         return textList;
     }
+
+
 }
 
 export const sliceLine=(line,name,num)=>{
@@ -557,4 +567,52 @@ export const sliceLine=(line,name,num)=>{
     return line.slice(start,end)
 }
 
+//计算字向量的余弦相似度
+export const computeWordVectorSimilar=(b1,b2)=>{
+    let up = 0;
+    let down_left = 0;
+    let down_right = 0;
+    for (let i = 0; i < b1.length; i++) {
+        up += b1[i] * b2[i];
+        down_left += b1[i] * b1[i];
+        down_right += b2[i] * b2[i];
+    }
+    down_left = Math.sqrt(down_left);
+    down_right = Math.sqrt(down_right);
+    let cos = 0;
+    let down = down_left * down_right;
+    if (down !== 0) {
+        cos = (up / down).toFixed(5);
+    }
+    return cos;
+}
 
+export const dijkstra=(matrix)=>{
+    debugger
+    let res=[0];
+    let dis=new Array(matrix.length)
+    for (let i = 0; i < dis.length; i++) {
+        dis[i]=0;
+    }
+    matrix.forEach((line)=>{
+        for (let i = 0; i < line.length; i++) {
+            if(line[i]!==-1){
+                dis[i]+=line[i];
+            }
+        }
+        let max=0
+        let loc=-1
+        for (let i = 0; i < dis.length; i++) {
+            if (res.indexOf(i)<0){
+                if(dis[i]>max){
+                    max=dis[i];
+                    loc=i;
+                }
+            }
+        }
+        if(loc!==-1){
+            res.push(loc)
+        }
+    })
+    return res;
+}

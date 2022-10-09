@@ -17,7 +17,7 @@
 
 <script>
 import {useProfileStore} from '../../../store'
-import {makeInvertedIndex,kMeansForSentences} from '../../../js/dict/dictUtil.js'
+import {makeInvertedIndex} from '../../../js/dict/dictUtil.js'
 
 import DictCollapse from "../../../components/dict/DictCollapse.vue";
 import DictG6 from "../../../components/dict/DictG6.vue";
