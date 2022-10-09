@@ -1,5 +1,6 @@
 // //移除无用字符
 import {pinyin} from "pinyin-pro";
+const kmeans = require('ml-kmeans');
 
 export const removeWords = (removeWords, texts) => {
     removeWords = removeWords + ' \r';
@@ -221,7 +222,13 @@ export const makeInvertedIndex = (removedChars, splitSigns, filterWords, minLeng
         }
     })
 
-
+    newDictList.forEach((line,index)=>{
+        try {
+            newDictList[index].textList=clustering(line.textList,5,line.name)
+        }catch (e) {
+            console.log("~~~")
+        }
+    })
     debugger
     // return dictList
     return newDictList;
@@ -467,4 +474,87 @@ export const makeKeywordDict = (settingForm, text, keyword) => {
     return newDictList
     // return resList;
 }
+
+export const kMeansForSentences=(textList,centerNum)=>{
+    // 生成数据
+    let wordMap=new Map();
+    let count=0
+    let numList=[]
+
+    textList.forEach((line)=>{
+        let numLine=[]
+        line.split('').forEach((word)=>{
+            if (!wordMap.has(word)){
+                wordMap.set(word,count);
+                count++;
+            }
+            numLine.push(wordMap.get(word));
+        })
+        numList.push(numLine);
+    })
+
+    let centers = [];
+    for (let i = 0; i < centerNum; i++) {
+        centers.push(numList[i])
+    }
+    // debugger
+    let ans = kmeans(numList, centerNum, { initialization: centers });
+    // console.log(ans)
+    return ans.clusters;
+}
+
+export const clustering=(textList,centerNum,name)=>{
+    let lineList=[]
+    let minlength=99999;
+    textList.forEach((line)=>{
+        if (line[1][0].length<minlength){
+            minlength=line[1][0].length;
+        }
+    })
+    textList.forEach((line)=>{
+        lineList.push(sliceLine(line[1][0],name,minlength))
+    })
+
+    if (lineList.length>centerNum){
+        let clusters=kMeansForSentences(lineList,centerNum)
+        if (clusters.length===textList.length){
+            let tempList=[]
+            for (let i = 0; i < centerNum; i++) {
+                textList.forEach((line,index)=>{
+                    if (clusters[index]===i){
+                        tempList.push(line);
+                    }
+                })
+            }
+            return tempList;
+        }else{
+            return textList;
+        }
+    }else {
+        return textList;
+    }
+}
+
+export const sliceLine=(line,name,num)=>{
+    let nameIndex=line.search(name);
+    if (nameIndex===-1){
+        return line.slice(0,num)
+    }
+    let start=Math.floor((num-1)/2)+(num-1)%2;
+    let end=Math.floor((num-1)/2)+1;
+    start=nameIndex-start;
+    end=nameIndex+end;
+    if (start<0){
+        end-=start;
+        start=0;
+    }else if(end>line.length){
+        start-=(end-line.length);
+        end=line.length;
+    }
+    if ((end-start)!==num||(end-line.length)>0||start===-1){
+        debugger
+    }
+    return line.slice(start,end)
+}
+
 

@@ -514,6 +514,7 @@ export default {
     },
     dblclick(isClicked, arr, keyword) {
       if (isClicked) {
+        arr[1][0] = arr[1][0].replace(/<span class="highlight-text">.*?<\/span>/g, keyword)
         //去除 [] ()
         let strList1 = arr[1][0].match(/<span class="long-word">.*?<\/span>/g);
         debugger
@@ -524,7 +525,7 @@ export default {
             arr[1][0] = arr[1][0].replace(str, sliceStr);
           })
         }
-
+        debugger
         let strList2 = arr[1][0].match(/<span class="like-word">.*?<\/span>/g);
         if (strList2 !== null) {
           strList2=[...new Set(strList2)]
@@ -534,7 +535,7 @@ export default {
             arr[1][0] = arr[1][0].replace(str, sliceStr);
           })
         }
-        arr[1][0] = arr[1][0].replace(/<span class="highlight-text">.*?<\/span>/g, keyword)
+
 
 
         this.textChangeInput = arr[1][0];
