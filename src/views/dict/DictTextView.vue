@@ -52,12 +52,10 @@ export default {
 
     // 修改() []的格式
     let strList1 = this.dictText.match(/\[.*?]/g);
-    debugger
     if (strList1 !== null) {
       strList1=[...new Set(strList1)]
       strList1.forEach((str) => {
-        this.dictText = this.dictText.replace(str, '<span class="long-word">' + str + '</span>')
-
+        this.dictText = this.dictText.replace(eval('/'+str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')+'/g'), '<span class="long-word">'+str+'</span>')
       })
     }
     debugger
@@ -66,7 +64,8 @@ export default {
     if (strList2 !== null) {
       strList2=[...new Set(strList2)]
       strList2.forEach((str) => {
-        this.dictText = this.dictText.replace(str, '<span class="like-word">' + str + '</span>')
+        console.log(eval('/'+str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')+'/g'))
+        this.dictText = this.dictText.replace(eval('/'+str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')+'/g'), '<span class="like-word">' + str + '</span>')
       })
     }
     // this.dictText=this.dictText.replace(/\[/g,'')
@@ -131,7 +130,7 @@ export default {
 }
 
 >>> .long-word {
-  color: #ff00ff;
+  color: #3a8ee6;
 }
 
 >>> .like-word {

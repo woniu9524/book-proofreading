@@ -509,13 +509,15 @@ export const sortSentences=(textList)=>{
     for (let i = 0; i < numList.length; i++) {
         for (let j = i+1; j < numList.length; j++) {
             mat[i][j]=Number(computeWordVectorSimilar(numList[i],numList[j]));
+            mat[j][i]=mat[i][j]
         }
     }
-
-    // 迪杰斯特拉找最大路径
-    let res=dijkstra(mat);
-    //返回顺序
-    return res;
+    //贪心寻找结果
+    return tanxin(mat);
+    // // 迪杰斯特拉找最大路径
+    // let res=dijkstra(mat);
+    // //返回顺序
+    // return res;
 
 }
 
@@ -615,4 +617,25 @@ export const dijkstra=(matrix)=>{
         }
     })
     return res;
+}
+
+export const tanxin=(mat)=>{
+    let res=[0]
+    let i=0
+    while (true){
+        let loc=-1;
+        let max=0;
+        for(let j=0;j<mat[i].length;j++){
+            if(res.indexOf(j)<0&&j!==i&&mat[i][j]>=max){
+                max=mat[i][j]
+                loc=j
+            }
+        }
+        if(loc===-1){
+            break
+        }
+        res.push(loc)
+        i=loc
+    }
+    return res
 }
