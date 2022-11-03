@@ -6,7 +6,7 @@
           <el-collapse-item v-for="(item,index) in textDict" :name="item.id" :id="item.name">
             <template #title>
               <el-tag type="" effect="dark" style="min-width: 50px">{{ item.name }}</el-tag>
-              <el-tag type="info" round style="min-width: 50px">{{ item.textList.length }}</el-tag>
+              <el-tag type="info" round style="min-width: 100px">{{ item.textList.length+'句，'+item.charCount+'次' }}</el-tag>
               <el-tag type="success" round style="min-width: 50px" v-show="zimuShow">{{ item.initial }}</el-tag>
             </template>
 
@@ -97,7 +97,7 @@
             <el-button color="#409EFF" @click="readConfig();settingDialogShow=true;" plain
                        style="width: 130px;margin: 15px 0 0 0">重新设置
             </el-button>
-            <el-button color="#409EFF" @click="outDictText" plain
+            <el-button color="#409EFF" @click="textOutDialogShow=true" plain
                        style="width: 130px;margin: 15px 0 0 0">文本导出
             </el-button>
             <el-button color="#409EFF" @click="goHead" plain style="width: 130px;margin: 15px 0 0 0">返回顶部
@@ -123,6 +123,18 @@
             </div>
             <div style="padding: 10px 0 10px 0">
               <el-button type="primary" plain round @click="recoverOrder">恢复默认</el-button>
+            </div>
+          </el-dialog>
+          <el-dialog
+              v-model="textOutDialogShow"
+              title="文本导出"
+              width="30%"
+          >
+            <div style="padding: 10px 0 10px 0">
+              <el-button type="primary" plain round @click="outDictText">正常导出</el-button>
+            </div>
+            <div style="padding: 10px 0 10px 0">
+              <el-button type="primary" plain round @click="outDictTextSpecial">去除(*)[*]导出</el-button>
             </div>
           </el-dialog>
 
@@ -198,6 +210,7 @@ export default {
       textDictCopy: [],
       dictDialogShow: false,
       settingDialogShow: false,
+      textOutDialogShow:false,
       zimuShow: false,
       objLocation: {},
       settingForm: {
@@ -630,6 +643,14 @@ export default {
       //   text=text.replace(eval("/"+arr[0]+"/g"),arr[1])
       // })
       ipc.send('saveDictText', localStorage.getItem("dictText"))
+      this.textOutDialogShow = false
+    },
+    outDictTextSpecial() {
+      let text=localStorage.getItem("dictText")
+      text=text.replace(/\[/g,"").replace(/]/g,"").replace(/（/g,"").replace(/）/g,"")
+      debugger
+      ipc.send('saveDictText', text)
+      this.textOutDialogShow = false
     }
 
   },

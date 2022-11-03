@@ -1,5 +1,6 @@
 // //移除无用字符
 import {pinyin} from "pinyin-pro";
+
 const kmeans = require('ml-kmeans');
 
 export const removeWords = (removeWords, texts) => {
@@ -202,32 +203,60 @@ export const makeInvertedIndex = (removedChars, splitSigns, filterWords, minLeng
         }
     })
 
-    let count=0
-    let newDictList=[]
-    newDict.forEach((lineList,key)=>{
+    let count = 0
+    let newDictList = []
+    newDict.forEach((lineList, key) => {
         count++
-        if (lineList.length>0){
-            let newLineList=[]
-            lineList.forEach((line)=>{
-                newLineList.push([line.nums[0],line.nums[1],line.title])
+        if (lineList.length > 0) {
+            let newLineList = []
+            lineList.forEach((line) => {
+                newLineList.push([line.nums[0], line.nums[1], line.title])
             })
 
             newDictList.push({
-                id:count,
-                name:key,
-                initial:lineList[0].initial,
+                id: count,
+                name: key,
+                initial: lineList[0].initial,
                 textList: newLineList
 
             })
         }
     })
 
-    newDictList.forEach((line,index)=>{
+    newDictList.forEach((line, index) => {
         try {
-            newDictList[index].textList=clustering(line.textList,5,line.name)
-        }catch (e) {
+            newDictList[index].textList = clustering(line.textList, 5, line.name)
+        } catch (e) {
             console.log("~~~")
         }
+    })
+    debugger
+    newDictList.forEach((line, index) => {
+        let textList = line.textList;
+        let coun = 0;
+
+        textList.forEach((text) => {
+            text[1][0].replace(/\[.*?\]/g, '').split('').forEach((char) => {
+                if (char === line.name) {
+                    coun++;
+                }
+            })
+        })
+        if (coun === 0) {
+            let coun2 = 0;
+            textList.forEach((text) => {
+                text[1][0].match(/\[.*?]/g).forEach((match) => {
+                        if (match.indexOf(line.name) >= 0) {
+                            coun2++;
+                        }
+                    }
+                )
+            })
+            newDictList[index].charCount = coun2;
+        } else {
+            newDictList[index].charCount = coun;
+        }
+
     })
     debugger
     // return dictList
@@ -451,41 +480,81 @@ export const makeKeywordDict = (settingForm, text, keyword) => {
         }
     })
 
-    let count=0
-    let newDictList=[]
-    newDict.forEach((lineList,key)=>{
+    let count = 0
+    let newDictList = []
+    newDict.forEach((lineList, key) => {
         count++
-        if (lineList.length>0){
-            let newLineList=[]
-            lineList.forEach((line)=>{
-                newLineList.push([line.nums[0],line.nums[1],line.title])
+        if (lineList.length > 0) {
+            let newLineList = []
+            lineList.forEach((line) => {
+                newLineList.push([line.nums[0], line.nums[1], line.title])
             })
 
             newDictList.push({
-                id:count,
-                name:key,
-                initial:lineList[0].initial,
+                id: count,
+                name: key,
+                initial: lineList[0].initial,
                 textList: newLineList
 
             })
         }
+    })
+
+    //删除关键字在[]的情况
+    // newDictList.forEach((line) => {
+    //     let textList = line.textList;
+    //     let newTextList = []
+    //     textList.forEach((text) => {
+    //         if (text[1].replace(/\[.*?\]/g, '').indexOf(line.name) >= 0) {
+    //             newTextList.push(text)
+    //         }
+    //     })
+    //     line.textList = newTextList
+    // })
+
+    newDictList.forEach((line, index) => {
+        let textList = line.textList;
+        let coun = 0;
+
+        textList.forEach((text) => {
+            text[1][0].replace(/\[.*?\]/g, '').split('').forEach((char) => {
+                if (char === line.name) {
+                    coun++;
+                }
+            })
+        })
+        if (coun === 0) {
+            let coun2 = 0;
+            textList.forEach((text) => {
+                text[1][0].match(/\[.*?]/g).forEach((match) => {
+                        if (match.indexOf(line.name) >= 0) {
+                            coun2++;
+                        }
+                    }
+                )
+            })
+            newDictList[index].charCount = coun2;
+        } else {
+            newDictList[index].charCount = coun;
+        }
+
     })
     debugger
     return newDictList
     // return resList;
 }
 
-export const sortSentences=(textList)=>{
+export const sortSentences = (textList) => {
     // 生成数据
-    let wordMap=new Map();
-    let count=0
-    let numList=[]
+    let wordMap = new Map();
+    let count = 0
+    let numList = []
 
-    textList.forEach((line)=>{
-        let numLine=[]
-        line.split('').forEach((word)=>{
-            if (!wordMap.has(word)){
-                wordMap.set(word,count);
+    textList.forEach((line) => {
+        let numLine = []
+        line.split('').forEach((word) => {
+            if (!wordMap.has(word)) {
+                wordMap.set(word, count);
                 count++;
             }
             numLine.push(wordMap.get(word));
@@ -494,22 +563,22 @@ export const sortSentences=(textList)=>{
     })
 
     // 生成领接矩阵
-    let mat=new Array(numList.length);
+    let mat = new Array(numList.length);
     for (let i = 0; i < mat.length; i++) {
-        mat[i]=new Array(numList.length);
+        mat[i] = new Array(numList.length);
         for (let j = 0; j < mat[i].length; j++) {
-            if (i===j){
-                mat[i][j]=0;
-            }else {
-                mat[i][j]=-1;
+            if (i === j) {
+                mat[i][j] = 0;
+            } else {
+                mat[i][j] = -1;
             }
         }
     }
     // 计算余弦相似度
     for (let i = 0; i < numList.length; i++) {
-        for (let j = i+1; j < numList.length; j++) {
-            mat[i][j]=Number(computeWordVectorSimilar(numList[i],numList[j]));
-            mat[j][i]=mat[i][j]
+        for (let j = i + 1; j < numList.length; j++) {
+            mat[i][j] = Number(computeWordVectorSimilar(numList[i], numList[j]));
+            mat[j][i] = mat[i][j]
         }
     }
     //贪心寻找结果
@@ -521,56 +590,56 @@ export const sortSentences=(textList)=>{
 
 }
 
-export const clustering=(textList,centerNum,name)=>{
-    try{
-        let lineList=[]
-        let minlength=99999;
-        textList.forEach((line)=>{
-            if (line[1][0].length<minlength){
-                minlength=line[1][0].length;
+export const clustering = (textList, centerNum, name) => {
+    try {
+        let lineList = []
+        let minlength = 99999;
+        textList.forEach((line) => {
+            if (line[1][0].length < minlength) {
+                minlength = line[1][0].length;
             }
         })
-        textList.forEach((line)=>{
-            lineList.push(sliceLine(line[1][0],name,minlength))
+        textList.forEach((line) => {
+            lineList.push(sliceLine(line[1][0], name, minlength))
         })
-        let sortList=sortSentences(lineList)
+        let sortList = sortSentences(lineList)
         // 将原来列表顺序换成sortList的顺序
-        let newTextList=new Array(textList.length);
+        let newTextList = new Array(textList.length);
         for (let i = 0; i < sortList.length; i++) {
-            newTextList[sortList[i]]=textList[i]
+            newTextList[sortList[i]] = textList[i]
         }
         return newTextList;
-    }catch (e){
+    } catch (e) {
         return textList;
     }
 
 
 }
 
-export const sliceLine=(line,name,num)=>{
-    let nameIndex=line.search(name);
-    if (nameIndex===-1){
-        return line.slice(0,num)
+export const sliceLine = (line, name, num) => {
+    let nameIndex = line.search(name);
+    if (nameIndex === -1) {
+        return line.slice(0, num)
     }
-    let start=Math.floor((num-1)/2)+(num-1)%2;
-    let end=Math.floor((num-1)/2)+1;
-    start=nameIndex-start;
-    end=nameIndex+end;
-    if (start<0){
-        end-=start;
-        start=0;
-    }else if(end>line.length){
-        start-=(end-line.length);
-        end=line.length;
+    let start = Math.floor((num - 1) / 2) + (num - 1) % 2;
+    let end = Math.floor((num - 1) / 2) + 1;
+    start = nameIndex - start;
+    end = nameIndex + end;
+    if (start < 0) {
+        end -= start;
+        start = 0;
+    } else if (end > line.length) {
+        start -= (end - line.length);
+        end = line.length;
     }
-    if ((end-start)!==num||(end-line.length)>0||start===-1){
+    if ((end - start) !== num || (end - line.length) > 0 || start === -1) {
         debugger
     }
-    return line.slice(start,end)
+    return line.slice(start, end)
 }
 
 //计算字向量的余弦相似度
-export const computeWordVectorSimilar=(b1,b2)=>{
+export const computeWordVectorSimilar = (b1, b2) => {
     let up = 0;
     let down_left = 0;
     let down_right = 0;
@@ -589,53 +658,53 @@ export const computeWordVectorSimilar=(b1,b2)=>{
     return cos;
 }
 
-export const dijkstra=(matrix)=>{
+export const dijkstra = (matrix) => {
     debugger
-    let res=[0];
-    let dis=new Array(matrix.length)
+    let res = [0];
+    let dis = new Array(matrix.length)
     for (let i = 0; i < dis.length; i++) {
-        dis[i]=0;
+        dis[i] = 0;
     }
-    matrix.forEach((line)=>{
+    matrix.forEach((line) => {
         for (let i = 0; i < line.length; i++) {
-            if(line[i]!==-1){
-                dis[i]+=line[i];
+            if (line[i] !== -1) {
+                dis[i] += line[i];
             }
         }
-        let max=0
-        let loc=-1
+        let max = 0
+        let loc = -1
         for (let i = 0; i < dis.length; i++) {
-            if (res.indexOf(i)<0){
-                if(dis[i]>max){
-                    max=dis[i];
-                    loc=i;
+            if (res.indexOf(i) < 0) {
+                if (dis[i] > max) {
+                    max = dis[i];
+                    loc = i;
                 }
             }
         }
-        if(loc!==-1){
+        if (loc !== -1) {
             res.push(loc)
         }
     })
     return res;
 }
 
-export const tanxin=(mat)=>{
-    let res=[0]
-    let i=0
-    while (true){
-        let loc=-1;
-        let max=0;
-        for(let j=0;j<mat[i].length;j++){
-            if(res.indexOf(j)<0&&j!==i&&mat[i][j]>=max){
-                max=mat[i][j]
-                loc=j
+export const tanxin = (mat) => {
+    let res = [0]
+    let i = 0
+    while (true) {
+        let loc = -1;
+        let max = 0;
+        for (let j = 0; j < mat[i].length; j++) {
+            if (res.indexOf(j) < 0 && j !== i && mat[i][j] >= max) {
+                max = mat[i][j]
+                loc = j
             }
         }
-        if(loc===-1){
+        if (loc === -1) {
             break
         }
         res.push(loc)
-        i=loc
+        i = loc
     }
     return res
 }
