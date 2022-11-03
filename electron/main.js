@@ -180,6 +180,7 @@ const writeExcel = (data, filepath, header = ['文件名', '原文本', '文件�
     })
     let bufferData = [{'name': '比较结果', 'data': excelList}]
     let buffer = xlsx.build(bufferData);
+
 // 写入文件
     fs.writeFile(filepath, buffer, function (err) {
         if (err) {
@@ -225,7 +226,8 @@ ipc.on('saveDictExcel', function (event, args) {
 
 const writeDictExcel = (data, filepath) => {
 
-    let buffer = xlsx.build([{name: "字典", data: data}]);
+
+    let buffer = xlsx.build([{name: "字典", data: data[0]},{name: "频率", data: data[1]}]);
     // 写入文件
     fs.writeFile(filepath, buffer, function (err) {
         if (err) {

@@ -331,11 +331,12 @@ export default {
       })
     },
     outExcel() {
-      let excelData = []
+      let excelData1 = []
+      let excelData2 = [['字词','出现句数','出现次数']]
       this.textDict.forEach((obj) => {
 
         let flag = true;
-
+        excelData2.push([obj.name,obj.textList.length,obj.charCount])
         obj.textList.forEach((lst) => {
           let tempList = []
           let wordName = obj.name.length > 1 ? "[" + obj.name + "]" : obj.name
@@ -345,7 +346,7 @@ export default {
             tempList.push(lst[0])
             //去除 [] ()
             let strList1 = lst[1][0].match(/<span class="long-word">.*?<\/span>/g);
-            debugger
+            // debugger
             if (strList1 !== null) {
               strList1=[...new Set(strList1)]
               strList1.forEach((str) => {
@@ -363,14 +364,14 @@ export default {
               })
             }
             tempList.push(lst[1][0].replace(/<span class="highlight-text">.*?<\/span>/g, wordName))
-            excelData.push(tempList)
+            excelData1.push(tempList)
             flag = false
           } else {
             tempList.push('')
             tempList.push(lst[2])
             tempList.push(lst[0])
             tempList.push(lst[1][0].replace(/<span class="highlight-text">.*?<\/span>/g, wordName))
-            excelData.push(tempList)
+            excelData1.push(tempList)
           }
           // line.replace(.*?<\/span>/g, keyword)
           // line = line.replace(/<span class="highlight-text">/g, '')
@@ -379,7 +380,9 @@ export default {
         })
 
       })
-      ipc.send('saveDictExcel', JSON.stringify(excelData))
+      debugger
+      let res=[excelData1,excelData2]
+      ipc.send('saveDictExcel', JSON.stringify(res))
     },
     getTextView(evt) {
       let keyLine = evt.target.innerText;
