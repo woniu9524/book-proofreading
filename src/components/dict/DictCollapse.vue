@@ -6,7 +6,10 @@
           <el-collapse-item v-for="(item,index) in textDict" :name="item.id" :id="item.name">
             <template #title>
               <el-tag type="" effect="dark" style="min-width: 50px">{{ item.name }}</el-tag>
-              <el-tag type="info" round style="min-width: 100px">{{ item.textList.length+'句，'+item.charCount+'次' }}</el-tag>
+              <el-tag type="info" round style="min-width: 100px">{{
+                  item.textList.length + '句，' + item.charCount + '次'
+                }}
+              </el-tag>
               <el-tag type="success" round style="min-width: 50px" v-show="zimuShow">{{ item.initial }}</el-tag>
             </template>
 
@@ -90,7 +93,10 @@
               />
             </el-form-item>
             <el-input v-model="keyword" placeholder="输入要查询的字" style="width: 130px;"/>
-            <el-button color="#409EFF" @click="outExcel" plain style="width: 130px;margin-top: 15px">导出表格
+            <el-button color="#409EFF" @click="andSearchDialogShow=true" plain style="width: 130px;margin: 15px 0 0 0">
+              多字搜索
+            </el-button>
+            <el-button color="#409EFF" @click="outExcel" plain style="width: 130px;margin: 15px 0 0 0">导出表格
             </el-button>
             <el-button color="#409EFF" @click="dictDialogShow=true" plain style="width: 130px;margin: 15px 0 0 0">辞典排序
             </el-button>
@@ -134,7 +140,7 @@
               <el-button type="primary" plain round @click="outDictText">正常导出</el-button>
             </div>
             <div style="padding: 10px 0 10px 0">
-              <el-button type="primary" plain round @click="outDictTextSpecial">去除(*)[*]导出</el-button>
+              <el-button type="primary" plain round @click="outDictTextSpecial">去除(*)[]导出</el-button>
             </div>
           </el-dialog>
 
@@ -176,6 +182,51 @@
               </span>
             </template>
           </el-dialog>
+
+
+          <el-dialog
+              v-model="andSearchDialogShow"
+              title="多字搜索"
+              width="60%"
+          >
+            <div>
+              <!--搜索框和搜索按钮-->
+              <el-input
+                  v-model="andSearchInput"
+                  class="w-50 m-2"
+                  placeholder="输入要搜索的字，多字用空格分割，回车搜索"
+                  :prefix-icon="Search"
+                  @keyup.enter.native="andSearch"
+              />
+            </div>
+            <div v-if="needOpen">
+              <div class="line-component dict-line" v-for="(obj,ind) in andSearchResult">
+                <el-row :gutter="5">
+                  <el-col :span="3" class="book-name">
+                    <p style="text-align: center">{{ obj.title }}</p>
+                  </el-col>
+                  <el-col :span="20" class="line-text">
+                    <p v-html="obj.text" :name="obj.text" @click="getTextView"
+                       style="color: #3a8ee6;cursor:pointer;"></p>
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+            <div v-else>
+              <div class="line-component dict-line" v-for="(obj,ind) in andSearchResult">
+                <el-row :gutter="5">
+                  <el-col :span="3" class="book-name">
+                    <p style="text-align: center">{{ obj.title }}</p>
+                  </el-col>
+                  <el-col :span="20" class="line-text">
+                    <p v-html="obj.text"></p>
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+
+
+          </el-dialog>
         </div>
       </el-affix>
     </el-col>
@@ -210,7 +261,10 @@ export default {
       textDictCopy: [],
       dictDialogShow: false,
       settingDialogShow: false,
-      textOutDialogShow:false,
+      textOutDialogShow: false,
+      andSearchDialogShow: false,
+      andSearchResult: [],
+      andSearchInput: "",
       zimuShow: false,
       objLocation: {},
       settingForm: {
@@ -284,7 +338,7 @@ export default {
           let strList1 = line[1][0].match(/<span class="long-word">.*?<\/span>/g);
           debugger
           if (strList1 !== null) {
-            strList1=[...new Set(strList1)]
+            strList1 = [...new Set(strList1)]
             strList1.forEach((str) => {
               let sliceStr = str.slice(24, -7);
               //console.log(sliceStr)
@@ -294,7 +348,7 @@ export default {
 
           let strList2 = line[1][0].match(/<span class="like-word">.*?<\/span>/g);
           if (strList2 !== null) {
-            strList2=[...new Set(strList2)]
+            strList2 = [...new Set(strList2)]
             strList2.forEach((str) => {
               let sliceStr = str.slice(24, -7);
               //console.log(sliceStr)
@@ -313,7 +367,7 @@ export default {
         lines.forEach((line, index) => {
           let strList1 = line[1][0].match(/\[.*?]/g);
           if (strList1 !== null) {
-            strList1=[...new Set(strList1)]
+            strList1 = [...new Set(strList1)]
             strList1.forEach((str) => {
               line[1][0] = line[1][0].replace(str, '<span class="long-word">' + str + '</span>')
             })
@@ -321,7 +375,7 @@ export default {
           }
           let strList2 = line[1][0].match(/（.*?）/g);
           if (strList2 !== null) {
-            strList2=[...new Set(strList2)]
+            strList2 = [...new Set(strList2)]
             strList2.forEach((str) => {
               line[1][0] = line[1][0].replace(str, '<span class="like-word">' + str + '</span>')
             })
@@ -332,11 +386,11 @@ export default {
     },
     outExcel() {
       let excelData1 = []
-      let excelData2 = [['字词','出现句数','出现次数']]
+      let excelData2 = [['字词', '出现句数', '出现次数']]
       this.textDict.forEach((obj) => {
 
         let flag = true;
-        excelData2.push([obj.name,obj.textList.length,obj.charCount])
+        excelData2.push([obj.name, obj.textList.length, obj.charCount])
         obj.textList.forEach((lst) => {
           let tempList = []
           let wordName = obj.name.length > 1 ? "[" + obj.name + "]" : obj.name
@@ -348,7 +402,7 @@ export default {
             let strList1 = lst[1][0].match(/<span class="long-word">.*?<\/span>/g);
             // debugger
             if (strList1 !== null) {
-              strList1=[...new Set(strList1)]
+              strList1 = [...new Set(strList1)]
               strList1.forEach((str) => {
                 let sliceStr = str.slice(24, -7);
                 lst[1][0] = lst[1][0].replace(str, sliceStr);
@@ -357,7 +411,7 @@ export default {
 
             let strList2 = lst[1][0].match(/<span class="like-word">.*?<\/span>/g);
             if (strList2 !== null) {
-              strList2=[...new Set(strList2)]
+              strList2 = [...new Set(strList2)]
               strList2.forEach((str) => {
                 let sliceStr = str.slice(24, -7);
                 lst[1][0] = lst[1][0].replace(str, sliceStr);
@@ -381,7 +435,7 @@ export default {
 
       })
       debugger
-      let res=[excelData1,excelData2]
+      let res = [excelData1, excelData2]
       ipc.send('saveDictExcel', JSON.stringify(res))
     },
     getTextView(evt) {
@@ -535,7 +589,7 @@ export default {
         let strList1 = arr[1][0].match(/<span class="long-word">.*?<\/span>/g);
         debugger
         if (strList1 !== null) {
-          strList1=[...new Set(strList1)]
+          strList1 = [...new Set(strList1)]
           strList1.forEach((str) => {
             let sliceStr = str.slice(24, -7);
             arr[1][0] = arr[1][0].replace(str, sliceStr);
@@ -544,14 +598,13 @@ export default {
         debugger
         let strList2 = arr[1][0].match(/<span class="like-word">.*?<\/span>/g);
         if (strList2 !== null) {
-          strList2=[...new Set(strList2)]
+          strList2 = [...new Set(strList2)]
           strList2.forEach((str) => {
             let sliceStr = str.slice(24, -7);
             // console.log(sliceStr)
             arr[1][0] = arr[1][0].replace(str, sliceStr);
           })
         }
-
 
 
         this.textChangeInput = arr[1][0];
@@ -570,7 +623,7 @@ export default {
               // 修改() []的格式
               let strList1 = arr[1][0].match(/\[.*?]/g);
               if (strList1 !== null) {
-                strList1=[...new Set(strList1)]
+                strList1 = [...new Set(strList1)]
                 strList1.forEach((str) => {
                   arr[1][0] = arr[1][0].replace(str, '<span class="long-word">' + str + '</span>')
                 })
@@ -578,7 +631,7 @@ export default {
 
               let strList2 = arr[1][0].match(/（.*?）/g);
               if (strList2 !== null) {
-                strList2=[...new Set(strList2)]
+                strList2 = [...new Set(strList2)]
                 strList2.forEach((str) => {
                   arr[1][0] = arr[1][0].replace(str, '<span class="like-word">' + str + '</span>')
                 })
@@ -598,7 +651,7 @@ export default {
             // 修改() []的格式
             let strList1 = arr[1][0].match(/\[.*?]/g);
             if (strList1 !== null) {
-              strList1=[...new Set(strList1)]
+              strList1 = [...new Set(strList1)]
               strList1.forEach((str) => {
                 arr[1][0] = arr[1][0].replace(str, '<span class="long-word">' + str + '</span>')
               })
@@ -606,18 +659,18 @@ export default {
 
             let strList2 = arr[1][0].match(/（.*?）/g);
             if (strList2 !== null) {
-              strList2=[...new Set(strList2)]
+              strList2 = [...new Set(strList2)]
               strList2.forEach((str) => {
                 arr[1][0] = arr[1][0].replace(str, '<span class="like-word">' + str + '</span>')
               })
             }
           }
-        }else {
-          arr[1][0]=this.textChangeInput.replace(eval("/" + keyword + "/g"), '<span class="highlight-text">' + keyword + '</span>')
+        } else {
+          arr[1][0] = this.textChangeInput.replace(eval("/" + keyword + "/g"), '<span class="highlight-text">' + keyword + '</span>')
           // 修改() []的格式
           let strList1 = arr[1][0].match(/\[.*?]/g);
           if (strList1 !== null) {
-            strList1=[...new Set(strList1)]
+            strList1 = [...new Set(strList1)]
             strList1.forEach((str) => {
               arr[1][0] = arr[1][0].replace(str, '<span class="long-word">' + str + '</span>')
             })
@@ -625,7 +678,7 @@ export default {
 
           let strList2 = arr[1][0].match(/（.*?）/g);
           if (strList2 !== null) {
-            strList2=[...new Set(strList2)]
+            strList2 = [...new Set(strList2)]
             strList2.forEach((str) => {
               arr[1][0] = arr[1][0].replace(str, '<span class="like-word">' + str + '</span>')
             })
@@ -649,12 +702,37 @@ export default {
       this.textOutDialogShow = false
     },
     outDictTextSpecial() {
-      let text=localStorage.getItem("dictText")
-      text=text.replace(/\[/g,"").replace(/]/g,"").replace(/（/g,"").replace(/）/g,"")
+      let text = localStorage.getItem("dictText")
+      text = text.replace(/\[/g, "").replace(/]/g, "").replace(/（.*?）/g, "")
       debugger
       ipc.send('saveDictText', text)
       this.textOutDialogShow = false
-    }
+    },
+    andSearch() {
+      // 分割关键词
+      let keywordList = this.andSearchInput.split(" ")
+      // 搜索
+      const that = this
+      this.textDict.forEach((line) => {
+        let flag = true
+        line.textList.forEach((text) => {
+          keywordList.forEach((keyword) => {
+            if (text[1][0].indexOf(keyword) === -1) {
+              flag = false
+            }
+          })
+          if (flag) {
+            that.andSearchResult.push({
+              title: text[2],
+              text: text[1][0]
+            })
+          }
+        })
+
+      })
+      // 对象去重
+      this.andSearchResult = [...new Map(this.andSearchResult.map(item => [item.title+item.text, item])).values()]
+    },
 
   },
   mounted() {
