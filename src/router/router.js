@@ -20,6 +20,8 @@ import KeyWordSetting from "../views/dict/keyWord/KeyWordSetting.vue";
 import AllWordShow from "../views/dict/allWord/AllWordShow.vue";
 import KeyWordShow from "../views/dict/keyWord/keyWordShow.vue";
 import DictTextView from "../views/dict/DictTextView.vue";
+import MultiCompare from "../views/multiTextCompare/multiCompare.vue";
+import loadText from "../views/multiTextCompare/loadText.vue";
 // 2. 定义路由配置
 const routes = [
     {
@@ -68,6 +70,12 @@ const routes = [
         path: '/preview', component: PreviewHtml
     },
     {path: "/table/viewText", component: ViewText},
+    {
+        path: "/layout", component: Layout, children: [
+            {path: "/multi/compare", component: MultiCompare},
+            {path: "/multi/loadText", component: loadText},
+        ]
+    },
 
 ];
 

@@ -34,6 +34,14 @@
               <el-menu-item index="2-2" @click="toKeyword">关键词辞典</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
+          <el-sub-menu index="3" @click="toMiltiTextCompare">
+            <template #title>
+              <el-icon>
+                <Aim/>
+              </el-icon>
+              <span>多文本比对</span>
+            </template>
+          </el-sub-menu>
           <el-menu-item index="3" @click="toCompare">
             <el-icon>
               <search/>
@@ -85,7 +93,8 @@ import {
   Setting,
   List,
   Opportunity,
-  Collection
+  Collection,
+    Aim
 } from '@element-plus/icons-vue'
 
 </script>
@@ -125,6 +134,9 @@ export default {
     },
     toMakeBook() {
       this.$router.push('/tools/make')
+    },
+    toMiltiTextCompare() {
+      this.$router.push('/multi/loadText')
     },
     openIntroduce() {
       const {shell} = require('electron');
