@@ -237,3 +237,33 @@ const writeDictExcel = (data, filepath) => {
     });
 
 }
+
+ipc.on('saveMultiExcel', function (event, args) {
+    dialog.showSaveDialog({
+        title: '保存文件',
+    }).then(result => {
+        let path = result.filePath
+        if (path.length<=5||path.slice(path.length - 5, path.length) !== '.xlsx') {
+            path += '.xlsx'
+        }
+        writeMultiTextExcel(JSON.parse(args), path)
+        event.reply("saveMultiExcelEnd");
+    }).catch(err => {
+        console.log(err)
+    })
+
+})
+
+const writeMultiTextExcel = (data, filepath) => {
+
+
+    let buffer = xlsx.build(data);
+    // 写入文件
+    fs.writeFile(filepath, buffer, function (err) {
+        if (err) {
+            console.log("Write failed: " + err);
+            return;
+        }
+    });
+
+}

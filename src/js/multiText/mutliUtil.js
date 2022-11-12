@@ -60,7 +60,7 @@ export const getIntersectionAndDiff = (ids, texts, stopWords) => {
                 }
             })
             if (flag) {
-                intersection[word] = freq[word]
+                intersection[word] = [freq[word], index]
             }
         }
         intersectionList.push(intersection)

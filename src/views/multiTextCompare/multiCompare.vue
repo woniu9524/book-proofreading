@@ -49,10 +49,11 @@
         </div>
         <el-table :data="obj.data.slice((currentPage-1)*9,currentPage*9)" stripe style="width: 100%" height="420px">
           <el-table-column prop="equalWord" label="相同字" width="80px"/>
+          <el-table-column prop="source1" label="来源" width="80px"/>
           <el-table-column prop="equalFrequency" label="出现次数" width="80px"/>
           <el-table-column prop="equalRate" label="出现占比"/>
           <el-table-column prop="diffWord" label="不同字" width="80px"/>
-          <el-table-column prop="source" label="来源"/>
+          <el-table-column prop="source2" label="来源"/>
           <el-table-column prop="diffFrequency" label="出现次数" width="80px"/>
           <el-table-column prop="diffRate" label="出现占比"/>
         </el-table>
@@ -75,7 +76,10 @@
 
 import {genCombinationText, genMutliTextGraphData, getIntersectionAndDiff} from "../../js/multiText/mutliUtil";
 import MultiG6 from "../../components/multiText/MultiG6.vue";
-
+const ipc = require('electron').ipcRenderer
+ipc.on('saveMultiExcelEnd', () => {
+  alert("导出完成！")
+})
 export default {
   name: 'multiCompare',
   components: {MultiG6},
@@ -87,7 +91,7 @@ export default {
       combinationType: 2,
       combinationNum: 0,
       form: {
-        stopWords: '，。',
+        stopWords: '!#$%&()*+,-./:;<=>?@[]^_`{|}~“”？，！•【】『』〖〗〔〕〈〉〔〕「」（）、。：；’‘……￥·●○§《》 　\t︰1234567890',
       },
       checkList: [],
       tableData: [],
@@ -147,7 +151,7 @@ export default {
                   for (let words of res.intersection) {
                     // 遍历words集合
                     Object.keys(words).forEach((key, index) => {
-                      intersection.push([key, words[key][0], words[key][1]])
+                      intersection.push([key, words[key][0][0], words[key][0][1],words[key][1]])
                     })
                   }
                   for (let words of res.diff) {
@@ -171,20 +175,21 @@ export default {
                         'equalWord': intersection[i][0],
                         'equalFrequency': intersection[i][1],
                         'equalRate': intersection[i][2],
+                        'source1':this.textNames[intersection[i][3]],
                       }
                     } else {
-                      temp = {'equalWord': '', 'equalFrequency': '', 'equalRate': ''}
+                      temp = {'equalWord': '', 'equalFrequency': '', 'equalRate': '', 'source1':''}
                     }
                     if (diff[i] !== undefined) {
                       temp['diffWord'] = diff[i][0]
                       temp['diffFrequency'] = diff[i][1]
                       temp['diffRate'] = diff[i][2]
-                      temp['source']=this.textNames[diff[i][3]]
+                      temp['source2']=this.textNames[diff[i][3]]
                     } else {
                       temp['diffWord'] = ''
                       temp['diffFrequency'] = ''
                       temp['diffRate'] = ''
-                      temp['source']=''
+                      temp['source2']=''
                     }
                     table.push(temp)
                   }
@@ -207,8 +212,93 @@ export default {
       return strList.join('-')
     },
     outTable(){
-      // TODO: 导出表格
-    }
+      let table=[]
+      console.log(this.tableData)
+      if (this.tableData===[]){
+        alert("请先生成表格！")
+        return
+      }
+      this.tableData.forEach((item)=> {
+        let bookNames = []
+        item.id.forEach((id) => {
+          bookNames.push(this.textNames[id])
+        })
+        // 制作表头1
+        let sheet = []
+        let title1 = []
+        let title2 = []
+        let sheetData = []
+        for (let i = 0; i < bookNames.length * 2; i++) {
+          for (let j = 0; j < 3; j++) {
+            title1.push('')
+          }
+          if (i===0){
+            title1.push('')
+          }
+        }
+        title1[0] = '相同'
+        title1[Math.floor((title1.length) / 2)+1] = '不同'
+        // 制作表头2
+        bookNames.forEach((name) => {
+          title2.push(name)
+          title2.push('出现次数')
+          title2.push('出现占比')
+        })
+        title2.push('')
+        bookNames.forEach((name) => {
+          title2.push(name)
+          title2.push('出现次数')
+          title2.push('出现占比')
+        })
+        // 制作表格数据
+        // item.data.forEach((row)=>{
+        //   // table.push([row.equalWord,row.equalFrequency,row.equalRate,row.diffWord,row.diffFrequency,row.diffRate,row.source])
+        //   sheetData.push(new Array(title1.length).fill(''))
+        // })
+
+          let group = this.getGroup(item.data, 'source1')
+          Object.keys(group).forEach((key, i) => {
+            group[key].forEach((row, index) => {
+              if (sheetData[index] === undefined) {
+                sheetData.push(new Array(title1.length).fill(''))
+              }
+              sheetData[index][i * 3] = row.equalWord
+              sheetData[index][i * 3 + 1] = row.equalFrequency
+              sheetData[index][i * 3 + 2] = row.equalRate
+            })
+          })
+
+          let group2 = this.getGroup(item.data, 'source2')
+          Object.keys(group2).forEach((key, i) => {
+            group2[key].forEach((row, index) => {
+              if (sheetData[index] === undefined) {
+                sheetData.push(new Array(title1.length).fill(''))
+              }
+              sheetData[index][i * 3 + bookNames.length * 3+1] = row.diffWord
+              sheetData[index][i * 3 + bookNames.length * 3 + 2] = row.diffFrequency
+              sheetData[index][i * 3 + bookNames.length * 3 + 3] = row.diffRate
+            })
+          })
+          sheetData.unshift(title1, title2)
+          table.push({
+            name: bookNames.join('-'),
+            data: sheetData,
+          })
+        })
+
+      debugger
+      ipc.send('saveMultiExcel', JSON.stringify(table))
+
+    },
+    getGroup(data,key){
+      let groups={};
+      data.forEach(c=>{
+        let value=c[key];
+        groups[value]=groups[value]||[];
+        groups[value].push(c);
+      });
+      return groups;
+    },
   },
   mounted() {
     this.readText();
