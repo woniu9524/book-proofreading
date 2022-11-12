@@ -42,31 +42,31 @@
               <span>多文本比对</span>
             </template>
           </el-sub-menu>
-          <el-menu-item index="3" @click="toCompare">
+          <el-menu-item index="4" @click="toCompare">
             <el-icon>
               <search/>
             </el-icon>
             <template #title>校对工具</template>
           </el-menu-item>
-          <el-menu-item index="4" @click="toRead">
+          <el-menu-item index="5" @click="toRead">
             <el-icon>
               <notebook/>
             </el-icon>
             <template #title>文本阅读</template>
           </el-menu-item>
-          <el-menu-item index="5" @click="toSetting">
+          <el-menu-item index="6" @click="toSetting">
             <el-icon>
               <setting/>
             </el-icon>
             <template #title>全局配置</template>
           </el-menu-item>
-          <el-menu-item index="6" @click="toTable">
+          <el-menu-item index="7" @click="toTable">
             <el-icon>
               <list/>
             </el-icon>
             <template #title>表格设置</template>
           </el-menu-item>
-          <el-menu-item index="7" @click="openIntroduce">
+          <el-menu-item index="8" @click="openIntroduce">
             <el-icon>
               <opportunity/>
             </el-icon>

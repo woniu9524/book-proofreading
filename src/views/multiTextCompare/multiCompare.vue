@@ -29,14 +29,24 @@
         </el-checkbox-group>
         <span v-show="this.combinationNum!==0" style="margin-left: 20px;padding-bottom: 10px">
           <el-button type="success" @click="genTable">{{ '生成' + combinationNum + "组对比" }}</el-button>
+        </span><span v-show="this.combinationNum!==0" style="margin-left: 20px;padding-bottom: 10px">
+          <el-button type="primary" @click="outTable">{{ '导出' + combinationNum + "组对比" }}</el-button>
         </span>
       </el-form-item>
     </el-form>
   </el-row>
   <el-row>
     <el-tabs tab-position="left" style="width: 98%;">
-      <el-tab-pane label="关系图">hello</el-tab-pane>
+      <el-tab-pane label="关系图">
+        <MultiG6
+            :graph-data="graphData"
+            v-if="fresh"
+        />
+      </el-tab-pane>
       <el-tab-pane :label="getBookId(obj.id)" v-for="obj in tableData" >
+        <div style="text-align: center">
+          <el-tag v-for="i in obj.id" style="margin: 0px 10px 0px 10px">{{textNames[i]}}</el-tag>
+        </div>
         <el-table :data="obj.data.slice((currentPage-1)*9,currentPage*9)" stripe style="width: 100%" height="420px">
           <el-table-column prop="equalWord" label="相同字" width="80px"/>
           <el-table-column prop="equalFrequency" label="出现次数" width="80px"/>
@@ -56,9 +66,6 @@
           </el-pagination>
         </div>
       </el-tab-pane>
-
-
-
     </el-tabs>
   </el-row>
 </template>
@@ -66,10 +73,12 @@
 <script>
 
 
-import {genCombinationText, getIntersectionAndDiff} from "../../js/multiText/mutliUtil";
+import {genCombinationText, genMutliTextGraphData, getIntersectionAndDiff} from "../../js/multiText/mutliUtil";
+import MultiG6 from "../../components/multiText/MultiG6.vue";
 
 export default {
   name: 'multiCompare',
+  components: {MultiG6},
   data() {
     return {
       Texts: [],
@@ -83,7 +92,9 @@ export default {
       checkList: [],
       tableData: [],
       combinationData: [],
+      graphData: [],
       currentPage: 1,
+      fresh:false,
     }
   },
   methods: {
@@ -114,6 +125,17 @@ export default {
     combination(m, n) {
       return this.factorial(m, n) / this.factorial(n, n);//就是Cmn(上面是n，下面是m) = Amn(上面是n，下面是m)/Ann(上下都是n)
     },
+    genGraph(){
+      let graphData=[]
+      this.combinationData.forEach((item,index,array)=>{
+        debugger
+         if (item.ids.length===2){
+           graphData.push(item)
+         }
+      })
+      this.graphData=genMutliTextGraphData(graphData,this.textNames)
+      this.fresh=true
+    },
     genTable() {
       this.tableData=[]
       this.checkList.forEach((item) => {
@@ -130,12 +152,11 @@ export default {
                   }
                   for (let words of res.diff) {
                     Object.keys(words).forEach((key, index) => {
-                      debugger
                       diff.push([key, words[key][0][0], words[key][0][1],words[key][1]])
                     })
                   }
                   this.combinationData.push({
-                    id: ids,
+                    ids: ids,
                     intersection: intersection,
                     diff: diff,
                   })
@@ -155,7 +176,6 @@ export default {
                       temp = {'equalWord': '', 'equalFrequency': '', 'equalRate': ''}
                     }
                     if (diff[i] !== undefined) {
-                      debugger
                       temp['diffWord'] = diff[i][0]
                       temp['diffFrequency'] = diff[i][1]
                       temp['diffRate'] = diff[i][2]
@@ -172,12 +192,12 @@ export default {
                     id: ids,
                     data: table,
                   })
-                  debugger
+
                 }
             )
           }
       )
-      console.log(this.tableData)
+      this.genGraph()
     },
     getBookId(ids){
       let strList=[]
@@ -185,6 +205,9 @@ export default {
         strList.push('('+(id+1)+')')
       })
       return strList.join('-')
+    },
+    outTable(){
+      // TODO: 导出表格
     }
   },
   mounted() {
