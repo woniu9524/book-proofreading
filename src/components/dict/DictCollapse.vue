@@ -400,7 +400,7 @@ export default {
             tempList.push(lst[0])
             //去除 [] ()
             let strList1 = lst[1][0].match(/<span class="long-word">.*?<\/span>/g);
-            // debugger
+            debugger
             if (strList1 !== null) {
               strList1 = [...new Set(strList1)]
               strList1.forEach((str) => {
@@ -424,6 +424,25 @@ export default {
             tempList.push('')
             tempList.push(lst[2])
             tempList.push(lst[0])
+            //去除 [] ()
+            let strList1 = lst[1][0].match(/<span class="long-word">.*?<\/span>/g);
+            debugger
+            if (strList1 !== null) {
+              strList1 = [...new Set(strList1)]
+              strList1.forEach((str) => {
+                let sliceStr = str.slice(24, -7);
+                lst[1][0] = lst[1][0].replace(str, sliceStr);
+              })
+            }
+
+            let strList2 = lst[1][0].match(/<span class="like-word">.*?<\/span>/g);
+            if (strList2 !== null) {
+              strList2 = [...new Set(strList2)]
+              strList2.forEach((str) => {
+                let sliceStr = str.slice(24, -7);
+                lst[1][0] = lst[1][0].replace(str, sliceStr);
+              })
+            }
             tempList.push(lst[1][0].replace(/<span class="highlight-text">.*?<\/span>/g, wordName))
             excelData1.push(tempList)
           }
@@ -713,6 +732,7 @@ export default {
       let keywordList = this.andSearchInput.split(" ")
       // 搜索
       const that = this
+
       this.textDict.forEach((line) => {
         let flag = true
         line.textList.forEach((text) => {
